@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>My Dashboard</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html[data-theme="light"]{
+  --bg:#ffffff;--bg2:#f5f5f4;--bg3:#eeede8;
+  --bg-info:#e6f1fb;--bg-success:#eaf3de;--bg-danger:#fcebeb;--bg-warning:#faeeda;--bg-purple:#eeedfe;--bg-overlay:rgba(0,0,0,.04);
+  --tx:#1a1a18;--tx2:#5f5e5a;--tx3:#9e9c97;
+  --tx-info:#185fa5;--tx-success:#3b6d11;--tx-danger:#a32d2d;--tx-warning:#854f0b;--tx-purple:#534ab7;
+  --bd:rgba(0,0,0,.12);--bd2:rgba(0,0,0,.22);--bd-info:rgba(24,95,165,.35);
+  --shadow:0 1px 4px rgba(0,0,0,.08);--rm:8px;--rl:12px;
+}
+html[data-theme="dark"]{
+  --bg:#1e1e1c;--bg2:#2a2a28;--bg3:#333330;
+  --bg-info:#0c447c;--bg-success:#27500a;--bg-danger:#501313;--bg-warning:#633806;--bg-purple:#3c3489;--bg-overlay:rgba(255,255,255,.04);
+  --tx:#f0efe9;--tx2:#b4b2a9;--tx3:#6e6c66;
+  --tx-info:#85b7eb;--tx-success:#97c459;--tx-danger:#f09595;--tx-warning:#ef9f27;--tx-purple:#afa9ec;
+  --bd:rgba(255,255,255,.12);--bd2:rgba(255,255,255,.22);--bd-info:rgba(133,183,235,.35);
+  --shadow:0 1px 4px rgba(0,0,0,.3);--rm:8px;--rl:12px;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg2);color:var(--tx);min-height:100vh}
+
+/* ── LOGIN SCREEN ── */
+#login-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg2)}
+.login-card{background:var(--bg);border:.5px solid var(--bd);border-radius:16px;padding:2.5rem 2rem;width:100%;max-width:380px;box-shadow:0 4px 24px rgba(0,0,0,.1);text-align:center}
+.login-logo{width:52px;height:52px;border-radius:14px;background:var(--bg-info);display:flex;align-items:center;justify-content:center;color:var(--tx-info);font-size:26px;margin:0 auto 1.25rem}
+.login-title{font-size:20px;font-weight:600;color:var(--tx);margin-bottom:6px}
+.login-sub{font-size:13px;color:var(--tx2);margin-bottom:1.75rem;line-height:1.5}
+.login-divider{display:flex;align-items:center;gap:10px;margin:1.25rem 0;color:var(--tx3);font-size:12px}
+.login-divider::before,.login-divider::after{content:'';flex:1;height:.5px;background:var(--bd)}
+.oauth-btn{width:100%;display:flex;align-items:center;gap:10px;padding:10px 16px;border:.5px solid var(--bd);border-radius:var(--rm);background:var(--bg);cursor:pointer;font-family:inherit;font-size:14px;font-weight:500;color:var(--tx);margin-bottom:10px;transition:background .15s,border-color .15s,box-shadow .15s}
+.oauth-btn:hover{background:var(--bg2);border-color:var(--bd2);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.oauth-btn:active{transform:scale(.98)}
+.oauth-btn img,.oauth-btn i{width:20px;height:20px;object-fit:contain;flex-shrink:0;font-size:18px}
+.oauth-btn span{flex:1;text-align:left}
+.oauth-btn .arrow{color:var(--tx3);font-size:14px}
+.login-error{font-size:12px;color:var(--tx-danger);background:var(--bg-danger);border-radius:var(--rm);padding:8px 12px;margin-top:12px;display:none}
+.login-footer{margin-top:1.5rem;font-size:11px;color:var(--tx3);line-height:1.6}
+
+/* ── APP SCREEN ── */
+#app-screen{display:none}
+.app{display:grid;grid-template-columns:285px 1fr 305px;grid-template-rows:auto auto 1fr;min-height:100vh}
+.topbar{grid-column:1/-1;background:var(--bg);border-bottom:.5px solid var(--bd);padding:0 1.25rem;display:flex;align-items:center;gap:12px;height:52px}
+.topbar-brand{display:flex;align-items:center;gap:7px;font-size:15px;font-weight:600;color:var(--tx);margin-right:auto}
+.topbar-brand i{font-size:20px;color:var(--tx-info)}
+.stat-chip{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--tx2);background:var(--bg2);border:.5px solid var(--bd);border-radius:20px;padding:3px 10px}
+.stat-chip i{font-size:13px}
+.stat-chip b{color:var(--tx);font-weight:600}
+.top-clock{font-size:12px;color:var(--tx2);white-space:nowrap}
+.theme-btn,.icon-btn-top{background:none;border:.5px solid var(--bd);border-radius:var(--rm);cursor:pointer;padding:5px 8px;color:var(--tx2);font-size:16px;display:flex;align-items:center;transition:background .12s}
+.theme-btn:hover,.icon-btn-top:hover{background:var(--bg2)}
+
+/* user avatar */
+.user-pill{display:flex;align-items:center;gap:7px;padding:3px 10px 3px 3px;border:.5px solid var(--bd);border-radius:20px;background:var(--bg2);cursor:pointer;transition:background .12s}
+.user-pill:hover{background:var(--bg3)}
+.user-avatar{width:26px;height:26px;border-radius:50%;object-fit:cover;flex-shrink:0}
+.user-avatar-fallback{width:26px;height:26px;border-radius:50%;background:var(--bg-info);color:var(--tx-info);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0}
+.user-name{font-size:12px;font-weight:500;color:var(--tx);max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* user dropdown */
+.user-dropdown{position:absolute;top:56px;right:1.25rem;background:var(--bg);border:.5px solid var(--bd);border-radius:var(--rl);box-shadow:0 4px 20px rgba(0,0,0,.15);min-width:200px;z-index:100;display:none;overflow:hidden}
+.user-dropdown.open{display:block}
+.ud-header{padding:12px 14px;border-bottom:.5px solid var(--bd)}
+.ud-name{font-size:13px;font-weight:600;color:var(--tx)}
+.ud-email{font-size:11px;color:var(--tx2);margin-top:2px}
+.ud-item{display:flex;align-items:center;gap:8px;padding:10px 14px;font-size:13px;color:var(--tx);cursor:pointer;transition:background .12s;background:none;border:none;width:100%;font-family:inherit;text-align:left}
+.ud-item:hover{background:var(--bg2)}
+.ud-item i{font-size:15px;color:var(--tx2)}
+.ud-item.danger{color:var(--tx-danger)}
+.ud-item.danger i{color:var(--tx-danger)}
+
+.statbar{grid-column:1/-1;background:var(--bg);border-bottom:.5px solid var(--bd);padding:0 1.25rem;display:flex;gap:24px;height:36px;align-items:center}
+.sb-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--tx2)}
+.sb-item i{font-size:13px}
+.sb-item .sb-val{font-weight:600;color:var(--tx)}
+.sb-sep{width:.5px;height:16px;background:var(--bd)}
+
+.panel{padding:1rem;overflow-y:auto;height:calc(100vh - 88px)}
+.panel-left{background:var(--bg2);border-right:.5px solid var(--bd)}
+.panel-center{background:var(--bg3)}
+.panel-right{background:var(--bg2);border-left:.5px solid var(--bd)}
+.panel::-webkit-scrollbar{width:4px}
+.panel::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:4px}
+.panel-title{font-size:11px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;display:flex;align-items:center;gap:6px}
+.panel-title i{font-size:14px}
+
+input[type=text],input[type=password],input[type=date],textarea,select{
+  font-family:inherit;font-size:13px;color:var(--tx);background:var(--bg);border:.5px solid var(--bd);border-radius:var(--rm);padding:7px 10px;width:100%;outline:none;transition:border-color .15s,box-shadow .15s;
+}
+input:focus,textarea:focus,select:focus{border-color:var(--tx-info);box-shadow:0 0 0 3px rgba(24,95,165,.1)}
+input::placeholder,textarea::placeholder{color:var(--tx2);opacity:.55}
+textarea{resize:vertical;min-height:58px}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%23888' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;padding-right:26px}
+
+.form-box{background:var(--bg);border:.5px solid var(--bd);border-radius:var(--rl);margin-bottom:1rem;overflow:hidden;box-shadow:var(--shadow)}
+.form-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:none;border:none;cursor:pointer;font-family:inherit;font-size:12px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.05em;transition:background .12s}
+.form-toggle:hover{background:var(--bg-overlay)}
+.form-toggle i.chevron{font-size:14px;transition:transform .2s}
+.form-toggle.open i.chevron{transform:rotate(180deg)}
+.form-body{padding:0 14px 14px;display:none}
+.form-body.open{display:block}
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:8px}
+.field label{font-size:11px;font-weight:500;color:var(--tx2);text-transform:uppercase;letter-spacing:.04em}
+
+.btn{font-family:inherit;font-size:13px;font-weight:500;color:var(--tx);background:var(--bg);border:.5px solid var(--bd);border-radius:var(--rm);padding:7px 13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:background .12s,border-color .12s,transform .1s}
+.btn:hover{background:var(--bg2);border-color:var(--bd2)}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--bg-info);border-color:var(--bd-info);color:var(--tx-info)}
+.btn-primary:hover{border-color:var(--tx-info)}
+.btn-sm{font-size:11px;padding:4px 8px}
+.btn-icon{padding:5px 6px}
+.btn-danger{color:var(--tx-danger)}
+.btn-danger:hover{background:var(--bg-danger)}
+.err{font-size:12px;color:var(--tx-danger);background:var(--bg-danger);border-radius:var(--rm);padding:6px 10px;margin-bottom:8px;display:none}
+
+.search-wrap{position:relative;margin-bottom:.75rem}
+.search-wrap i{position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--tx3);pointer-events:none}
+.search-wrap input{padding-left:30px;background:var(--bg)}
+
+.link-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:8px;margin-bottom:.5rem}
+.link-card{background:var(--bg);border:.5px solid var(--bd);border-radius:var(--rl);padding:12px 8px 8px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;transition:background .15s,border-color .15s,box-shadow .15s;position:relative;box-shadow:var(--shadow)}
+.link-card:hover{background:var(--bg2);border-color:var(--bd2);box-shadow:0 3px 10px rgba(0,0,0,.1)}
+.link-card.pinned{border-color:var(--tx-warning);border-width:1.5px}
+.pin-badge{position:absolute;top:6px;right:6px;font-size:11px;color:var(--tx-warning)}
+.card-icon{width:40px;height:40px;border-radius:var(--rm);background:var(--bg-info);display:flex;align-items:center;justify-content:center;color:var(--tx-info);font-size:20px;pointer-events:none}
+.card-icon.pinned-icon{background:var(--bg-warning);color:var(--tx-warning)}
+.card-name{font-size:12px;font-weight:500;color:var(--tx);text-align:center;word-break:break-word;line-height:1.3}
+.card-url{font-size:10px;color:var(--tx2);text-align:center;overflow:hidden;max-height:24px;word-break:break-all}
+.card-actions{display:flex;gap:3px;margin-top:2px}
+.card-confirm{position:absolute;inset:0;background:var(--bg-danger);border-radius:var(--rl);display:none;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:8px}
+.card-confirm p{font-size:11px;color:var(--tx-danger);font-weight:500;text-align:center}
+.card-confirm .conf-btns{display:flex;gap:5px}
+
+.section-divider{font-size:10px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.06em;margin:1rem 0 .5rem;display:flex;align-items:center;gap:8px}
+.section-divider::after{content:'';flex:1;height:.5px;background:var(--bd)}
+.empty-state{display:flex;flex-direction:column;align-items:center;gap:6px;padding:1.5rem 0;color:var(--tx3)}
+.empty-state i{font-size:28px}
+.empty-state p{font-size:12px;font-style:italic}
+
+.pick-toggle{display:inline-flex;align-items:center;gap:6px;background:var(--bg2);border:.5px solid var(--bd);border-radius:var(--rm);padding:6px 10px;cursor:pointer;font-family:inherit;font-size:12px;color:var(--tx);transition:border-color .12s}
+.pick-toggle:hover{border-color:var(--bd2)}
+.icon-picker{display:none;flex-wrap:wrap;gap:5px;padding:8px;background:var(--bg2);border:.5px solid var(--bd);border-radius:var(--rm);margin-top:6px;max-height:150px;overflow-y:auto}
+.ip-label{font-size:10px;font-weight:500;color:var(--tx2);text-transform:uppercase;letter-spacing:.04em;width:100%;margin-bottom:3px}
+.ip-btn{width:30px;height:30px;background:var(--bg);border:.5px solid var(--bd);border-radius:var(--rm);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--tx2);transition:background .1s,color .1s}
+.ip-btn:hover,.ip-btn.sel{background:var(--bg-info);border-color:var(--bd-info);color:var(--tx-info)}
+
+.todo-filters{display:flex;gap:4px;margin-bottom:.75rem;flex-wrap:wrap}
+.filter-btn{font-size:11px;padding:4px 10px;border-radius:20px;border:.5px solid var(--bd);background:var(--bg);cursor:pointer;font-family:inherit;color:var(--tx2);display:flex;align-items:center;gap:4px;transition:background .12s,border-color .12s,color .12s}
+.filter-btn:hover{background:var(--bg2)}
+.filter-btn.active{background:var(--bg-info);border-color:var(--bd-info);color:var(--tx-info);font-weight:600}
+.filter-count{background:var(--bd2);border-radius:20px;padding:1px 5px;font-size:10px;font-weight:600}
+.filter-btn.active .filter-count{background:rgba(24,95,165,.2)}
+
+.todo-item{background:var(--bg);border:.5px solid var(--bd);border-radius:var(--rl);padding:10px 12px;margin-bottom:6px;box-shadow:var(--shadow);transition:border-color .15s}
+.todo-item.overdue{border-color:var(--tx-danger)}
+.todo-top{display:flex;align-items:flex-start;gap:8px}
+.todo-text{flex:1;font-size:13px;color:var(--tx);line-height:1.4;word-break:break-word}
+.todo-text.done{text-decoration:line-through;color:var(--tx2)}
+.todo-meta{display:flex;align-items:center;gap:6px;margin-top:6px;flex-wrap:wrap}
+.status-badge{font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;white-space:nowrap}
+.s-pending{background:var(--bg-warning);color:var(--tx-warning)}
+.s-inprogress{background:var(--bg-info);color:var(--tx-info)}
+.s-complete{background:var(--bg-success);color:var(--tx-success)}
+.todo-date{font-size:10px;color:var(--tx3);display:flex;align-items:center;gap:3px}
+.todo-date.overdue-date{color:var(--tx-danger);font-weight:500}
+.todo-actions{display:flex;gap:3px;flex-shrink:0}
+
+.cred-item{background:var(--bg);border:.5px solid var(--bd);border-radius:var(--rl);padding:10px 12px;margin-bottom:6px;box-shadow:var(--shadow)}
+.cred-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.cred-site-wrap{display:flex;align-items:center;gap:7px}
+.cred-icon{width:28px;height:28px;border-radius:var(--rm);background:var(--bg-purple);display:flex;align-items:center;justify-content:center;color:var(--tx-purple);font-size:14px;flex-shrink:0}
+.cred-site{font-size:13px;font-weight:500;color:var(--tx)}
+.cred-row{display:flex;align-items:center;gap:6px;margin-bottom:4px}
+.cred-label{font-size:11px;color:var(--tx2);width:56px;flex-shrink:0;font-weight:500}
+.cred-val{font-size:12px;color:var(--tx);flex:1;font-family:monospace;word-break:break-all}
+.cred-val.hidden{color:var(--tx2);letter-spacing:2px}
+.cred-actions{display:flex;gap:3px;flex-shrink:0}
+.cred-note{margin-top:6px;font-size:11px;color:var(--tx2);border-top:.5px solid var(--bd);padding-top:6px;line-height:1.4}
+
+/* spinner */
+.spinner{width:22px;height:22px;border:2.5px solid var(--bd);border-top-color:var(--tx-info);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ LOGIN SCREEN ══════════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo"><i class="ti ti-layout-dashboard" aria-hidden="true"></i></div>
+    <div class="login-title">My Dashboard</div>
+    <div class="login-sub">Sign in to access your personal link cards, tasks, and credentials vault.</div>
+
+    <button class="oauth-btn" id="btn-google" onclick="signIn('google')">
+      <img src="https://www.google.com/favicon.ico" alt="Google"/>
+      <span>Continue with Google</span>
+      <i class="ti ti-arrow-right arrow" aria-hidden="true"></i>
+    </button>
+    <button class="oauth-btn" id="btn-github" onclick="signIn('github')">
+      <i class="ti ti-brand-github" aria-hidden="true" style="font-size:20px;width:20px;height:20px"></i>
+      <span>Continue with GitHub</span>
+      <i class="ti ti-arrow-right arrow" aria-hidden="true"></i>
+    </button>
+    <button class="oauth-btn" id="btn-microsoft" onclick="signIn('microsoft')">
+      <img src="https://www.microsoft.com/favicon.ico" alt="Microsoft"/>
+      <span>Continue with Microsoft</span>
+      <i class="ti ti-arrow-right arrow" aria-hidden="true"></i>
+    </button>
+
+    <div class="login-error" id="login-error"></div>
+    <div class="login-footer">
+      Your data is stored privately per account.<br/>
+      We never share your credentials with anyone.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ APP SCREEN ══════════════ -->
+<div id="app-screen">
+<div class="app">
+
+  <header class="topbar">
+    <div class="topbar-brand"><i class="ti ti-layout-dashboard" aria-hidden="true"></i> My Dashboard</div>
+    <div class="stat-chip"><i class="ti ti-link" aria-hidden="true"></i> <b id="s-links">0</b> links</div>
+    <div class="stat-chip"><i class="ti ti-checkbox" aria-hidden="true"></i> <b id="s-tasks">0</b> tasks</div>
+    <div class="stat-chip"><i class="ti ti-alert-triangle" style="color:var(--tx-danger)" aria-hidden="true"></i> <b id="s-overdue" style="color:var(--tx-danger)">0</b> overdue</div>
+    <div class="stat-chip"><i class="ti ti-lock" aria-hidden="true"></i> <b id="s-creds">0</b> creds</div>
+    <span class="top-clock" id="clock"></span>
+    <button class="theme-btn" onclick="toggleTheme()" title="Toggle theme"><i class="ti ti-moon" id="theme-icon" aria-hidden="true"></i></button>
+    <div style="position:relative">
+      <div class="user-pill" onclick="toggleDropdown()" id="user-pill">
+        <div class="user-avatar-fallback" id="user-avatar-fallback">?</div>
+        <span class="user-name" id="user-name">Loading…</span>
+        <i class="ti ti-chevron-down" style="font-size:12px;color:var(--tx3)" aria-hidden="true"></i>
+      </div>
+      <div class="user-dropdown" id="user-dropdown">
+        <div class="ud-header">
+          <div class="ud-name" id="ud-name"></div>
+          <div class="ud-email" id="ud-email"></div>
+        </div>
+        <button class="ud-item danger" onclick="signOut()">
+          <i class="ti ti-logout" aria-hidden="true"></i> Sign out
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="statbar">
+    <div class="sb-item"><i class="ti ti-star" style="color:var(--tx-warning)" aria-hidden="true"></i> <span class="sb-val" id="sb-pinned">0</span> pinned</div>
+    <div class="sb-sep"></div>
+    <div class="sb-item"><i class="ti ti-clock" style="color:var(--tx-warning)" aria-hidden="true"></i> <span class="sb-val" id="sb-pending">0</span> pending</div>
+    <div class="sb-sep"></div>
+    <div class="sb-item"><i class="ti ti-loader" style="color:var(--tx-info)" aria-hidden="true"></i> <span class="sb-val" id="sb-inprogress">0</span> in progress</div>
+    <div class="sb-sep"></div>
+    <div class="sb-item"><i class="ti ti-circle-check" style="color:var(--tx-success)" aria-hidden="true"></i> <span class="sb-val" id="sb-complete">0</span> complete</div>
+  </div>
+
+  <!-- LEFT: TODO -->
+  <aside class="panel panel-left">
+    <div class="panel-title"><i class="ti ti-checkbox" aria-hidden="true"></i> To-do list</div>
+    <div class="form-box">
+      <button class="form-toggle" id="todo-toggle" onclick="toggleForm('todo')">
+        <span style="display:flex;align-items:center;gap:6px"><i class="ti ti-plus-circle" aria-hidden="true"></i> Add new task</span>
+        <i class="ti ti-chevron-down chevron" aria-hidden="true"></i>
+      </button>
+      <div class="form-body" id="todo-body">
+        <div class="field" style="margin-top:4px">
+          <label for="todo-text">Task</label>
+          <textarea id="todo-text" placeholder="What needs to be done?"></textarea>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:8px">
+          <div class="field" style="flex:1;margin-bottom:0">
+            <label for="todo-status">Status</label>
+            <select id="todo-status">
+              <option value="pending">Pending</option>
+              <option value="inprogress">In progress</option>
+              <option value="complete">Complete</option>
+            </select>
+          </div>
+          <div class="field" style="flex:1;margin-bottom:0">
+            <label for="todo-date">Due date</label>
+            <input type="date" id="todo-date"/>
+          </div>
+        </div>
+        <div class="err" id="todo-err"></div>
+        <button class="btn btn-primary" onclick="addTodo()" style="width:100%;justify-content:center"><i class="ti ti-plus" aria-hidden="true"></i> Add task</button>
+      </div>
+    </div>
+    <div class="todo-filters">
+      <button class="filter-btn active" id="f-all" onclick="setFilter('all')">All <span class="filter-count" id="fc-all">0</span></button>
+      <button class="filter-btn" id="f-pending" onclick="setFilter('pending')"><span style="color:var(--tx-warning)">●</span> Pending <span class="filter-count" id="fc-pending">0</span></button>
+      <button class="filter-btn" id="f-inprogress" onclick="setFilter('inprogress')"><span style="color:var(--tx-info)">●</span> In progress <span class="filter-count" id="fc-inprogress">0</span></button>
+      <button class="filter-btn" id="f-complete" onclick="setFilter('complete')"><span style="color:var(--tx-success)">●</span> Complete <span class="filter-count" id="fc-complete">0</span></button>
+    </div>
+    <div id="todo-list"></div>
+  </aside>
+
+  <!-- CENTER: LINK CARDS -->
+  <main class="panel panel-center">
+    <div class="panel-title"><i class="ti ti-link" aria-hidden="true"></i> Link cards</div>
+    <div class="form-box">
+      <button class="form-toggle" id="card-toggle" onclick="toggleForm('card')">
+        <span style="display:flex;align-items:center;gap:6px"><i class="ti ti-plus-circle" aria-hidden="true"></i> Add new link card</span>
+        <i class="ti ti-chevron-down chevron" aria-hidden="true"></i>
+      </button>
+      <div class="form-body" id="card-body">
+        <div style="display:flex;gap:8px;margin-top:4px;margin-bottom:8px">
+          <div class="field" style="flex:1;margin-bottom:0"><label for="lw-name">Name</label><input type="text" id="lw-name" placeholder="ServiceNow Docs"/></div>
+          <div class="field" style="flex:1.6;margin-bottom:0"><label for="lw-url">URL</label><input type="text" id="lw-url" placeholder="https://docs.servicenow.com"/></div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:8px">
+          <div class="field" style="flex:1;margin-bottom:0">
+            <label>Icon</label>
+            <button class="pick-toggle" id="pick-toggle" onclick="togglePicker()">
+              <i id="cur-icon" class="ti ti-link" aria-hidden="true"></i>
+              <span id="cur-label">link</span>
+              <i class="ti ti-chevron-down" aria-hidden="true" style="font-size:11px;color:var(--tx2)"></i>
+            </button>
+            <div class="icon-picker" id="icon-picker"></div>
+          </div>
+          <div class="field" style="flex:1;margin-bottom:0">
+            <label>Priority</label>
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;text-transform:none;letter-spacing:0;color:var(--tx);font-weight:400">
+              <input type="checkbox" id="lw-pin" style="width:auto;accent-color:var(--tx-warning)"/> Pin to top
+            </label>
+          </div>
+        </div>
+        <div class="err" id="lw-err"></div>
+        <button class="btn btn-primary" onclick="addCard()" style="width:100%;justify-content:center"><i class="ti ti-plus" aria-hidden="true"></i> Add card</button>
+      </div>
+    </div>
+    <div class="search-wrap"><i class="ti ti-search" aria-hidden="true"></i><input type="text" id="card-search" placeholder="Search link cards…" oninput="renderCards()"/></div>
+    <div class="section-divider" id="pinned-label" style="display:none"><i class="ti ti-star" aria-hidden="true"></i> Pinned</div>
+    <div class="link-grid" id="pinned-grid"></div>
+    <div class="section-divider" id="all-label" style="display:none"><i class="ti ti-layout-grid" aria-hidden="true"></i> All links</div>
+    <div class="link-grid" id="card-grid"></div>
+    <div class="empty-state" id="card-empty" style="display:none"><i class="ti ti-link-off" aria-hidden="true"></i><p>No link cards yet.</p></div>
+    <div class="empty-state" id="card-no-results" style="display:none"><i class="ti ti-search-off" aria-hidden="true"></i><p>No cards match your search.</p></div>
+  </main>
+
+  <!-- RIGHT: CREDENTIALS -->
+  <aside class="panel panel-right">
+    <div class="panel-title"><i class="ti ti-lock" aria-hidden="true"></i> Credentials vault</div>
+    <div class="form-box">
+      <button class="form-toggle" id="cred-toggle" onclick="toggleForm('cred')">
+        <span style="display:flex;align-items:center;gap:6px"><i class="ti ti-plus-circle" aria-hidden="true"></i> Add credential</span>
+        <i class="ti ti-chevron-down chevron" aria-hidden="true"></i>
+      </button>
+      <div class="form-body" id="cred-body">
+        <div class="field" style="margin-top:4px"><label for="cr-site">Site / app name</label><input type="text" id="cr-site" placeholder="e.g. ServiceNow DEV"/></div>
+        <div class="field"><label for="cr-user">Username / email</label><input type="text" id="cr-user" placeholder="user@example.com"/></div>
+        <div class="field">
+          <label for="cr-pwd">Password</label>
+          <div style="display:flex;gap:6px">
+            <input type="password" id="cr-pwd" placeholder="••••••••" style="flex:1"/>
+            <button class="btn btn-icon" onclick="togglePwdInput()" title="Show/hide"><i class="ti ti-eye" id="eye-icon" aria-hidden="true"></i></button>
+          </div>
+        </div>
+        <div class="field"><label for="cr-note">Note (optional)</label><input type="text" id="cr-note" placeholder="e.g. Admin account"/></div>
+        <div class="err" id="cr-err"></div>
+        <button class="btn btn-primary" onclick="addCred()" style="width:100%;justify-content:center"><i class="ti ti-plus" aria-hidden="true"></i> Save credential</button>
+      </div>
+    </div>
+    <div class="search-wrap"><i class="ti ti-search" aria-hidden="true"></i><input type="text" id="cred-search" placeholder="Search credentials…" oninput="renderCreds()"/></div>
+    <div id="cred-list"></div>
+    <div class="empty-state" id="cred-empty" style="display:none"><i class="ti ti-lock-off" aria-hidden="true"></i><p>No credentials saved yet.</p></div>
+    <div class="empty-state" id="cred-no-results" style="display:none"><i class="ti ti-search-off" aria-hidden="true"></i><p>No credentials match your search.</p></div>
+  </aside>
+
+</div>
+</div><!-- #app-screen -->
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, signInWithPopup, GoogleAuthProvider, GithubAuthProvider, OAuthProvider, signOut as fbSignOut, onAuthStateChanged }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, setDoc, getDoc }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+// ── PASTE YOUR FIREBASE CONFIG HERE ──
+const firebaseConfig = {
+  apiKey:            "YOUR_API_KEY",
+  authDomain:        "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId:         "YOUR_PROJECT_ID",
+  storageBucket:     "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+  appId:             "YOUR_APP_ID"
+};
+// ─────────────────────────────────────
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+let currentUser = null;
+
+/* ── Auth providers ── */
+const providers = {
+  google:    new GoogleAuthProvider(),
+  github:    new GithubAuthProvider(),
+  microsoft: new OAuthProvider('microsoft.com')
+};
+
+window.signIn = async (type) => {
+  const errEl = document.getElementById('login-error');
+  errEl.style.display = 'none';
+  const btn = document.getElementById('btn-'+type);
+  const orig = btn.innerHTML;
+  btn.innerHTML = '<div class="spinner"></div><span>Signing in…</span>';
+  btn.disabled = true;
+  try {
+    await signInWithPopup(auth, providers[type]);
+  } catch(e) {
+    errEl.textContent = e.message.includes('popup-closed') ? 'Sign-in cancelled.' : 'Sign-in failed: ' + e.message;
+    errEl.style.display = 'block';
+    btn.innerHTML = orig;
+    btn.disabled = false;
+  }
+};
+
+window.signOut = async () => {
+  document.getElementById('user-dropdown').classList.remove('open');
+  await fbSignOut(auth);
+};
+
+/* ── Auth state ── */
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    currentUser = user;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app-screen').style.display   = 'block';
+    // populate user pill
+    const name = user.displayName || user.email || 'User';
+    document.getElementById('user-name').textContent = name;
+    document.getElementById('ud-name').textContent   = name;
+    document.getElementById('ud-email').textContent  = user.email || '';
+    const fallback = document.getElementById('user-avatar-fallback');
+    if (user.photoURL) {
+      const img = document.createElement('img');
+      img.src = user.photoURL; img.alt = name; img.className = 'user-avatar';
+      fallback.replaceWith(img);
+    } else {
+      fallback.textContent = name.charAt(0).toUpperCase();
+    }
+    await loadUserData(user.uid);
+    window.initApp();
+  } else {
+    currentUser = null;
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('app-screen').style.display   = 'none';
+  }
+});
+
+/* ── Firestore data ── */
+async function loadUserData(uid) {
+  const snap = await getDoc(doc(db, 'users', uid));
+  if (snap.exists()) {
+    const d = snap.data();
+    window._cards = d.cards || [];
+    window._todos = d.todos || [];
+    window._creds = d.creds || [];
+  } else {
+    window._cards = []; window._todos = []; window._creds = [];
+  }
+}
+
+window.saveUserData = async () => {
+  if (!currentUser) return;
+  await setDoc(doc(db, 'users', currentUser.uid), {
+    cards: window._cards,
+    todos: window._todos,
+    creds: window._creds
+  });
+};
+
+window.toggleDropdown = () => {
+  document.getElementById('user-dropdown').classList.toggle('open');
+};
+document.addEventListener('click', (e) => {
+  const pill = document.getElementById('user-pill');
+  const dd   = document.getElementById('user-dropdown');
+  if (!pill.contains(e.target) && !dd.contains(e.target)) dd.classList.remove('open');
+});
+</script>
+
+<script>
+/* ── App logic (runs after Firebase loads data) ── */
+window.initApp = function() {
+  cards = window._cards || [];
+  todos = window._todos || [];
+  creds = window._creds || [];
+  renderCards(); renderTodos(); renderCreds(); setFilter('all'); updateStats();
+  initTheme(); tick(); setInterval(tick, 1000);
+};
+
+function persist() {
+  window._cards = cards; window._todos = todos; window._creds = creds;
+  if (window.saveUserData) window.saveUserData();
+}
+
+let cards=[], todos=[], creds=[], todoFilter='all', selectedIcon='link';
+
+function initTheme(){
+  const saved=localStorage.getItem('lw_theme');
+  const sys=window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';
+  setTheme(saved||sys);
+}
+function setTheme(t){document.documentElement.setAttribute('data-theme',t);document.getElementById('theme-icon').className='ti ti-'+(t==='dark'?'sun':'moon');localStorage.setItem('lw_theme',t)}
+function toggleTheme(){const c=document.documentElement.getAttribute('data-theme');setTheme(c==='dark'?'light':'dark')}
+
+function tick(){
+  const n=new Date();
+  const el=document.getElementById('clock');
+  if(el) el.textContent=n.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'})+'  '+n.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+}
+
+function updateStats(){
+  const pinned=cards.filter(c=>c.pin).length;
+  const pending=todos.filter(t=>t.status==='pending').length;
+  const inp=todos.filter(t=>t.status==='inprogress').length;
+  const comp=todos.filter(t=>t.status==='complete').length;
+  const today=new Date();today.setHours(0,0,0,0);
+  const overdue=todos.filter(t=>t.date&&t.status!=='complete'&&new Date(t.date+'T00:00')<today).length;
+  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+  set('s-links',cards.length);set('s-tasks',todos.length);set('s-overdue',overdue);set('s-creds',creds.length);
+  set('sb-pinned',pinned);set('sb-pending',pending);set('sb-inprogress',inp);set('sb-complete',comp);
+  set('fc-all',todos.length);set('fc-pending',pending);set('fc-inprogress',inp);set('fc-complete',comp);
+}
+
+function toggleForm(k){
+  const t=document.getElementById(k+'-toggle'),b=document.getElementById(k+'-body');
+  const o=b.classList.contains('open');b.classList.toggle('open',!o);t.classList.toggle('open',!o);
+}
+
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function isUrl(s){try{new URL(s);return true}catch{return false}}
+function showErr(id,m){const e=document.getElementById(id);if(!e)return;e.textContent=m;e.style.display='block';clearTimeout(e._t);e._t=setTimeout(()=>e.style.display='none',3000)}
+function fmtDate(d){if(!d)return'';return new Date(d+'T00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
+function isOverdue(d,s){if(!d||s==='complete')return false;const t=new Date();t.setHours(0,0,0,0);return new Date(d+'T00:00')<t}
+
+const ICONS=[
+  {k:'link',l:'link'},{k:'world',l:'website'},{k:'home',l:'home'},{k:'brand-github',l:'github'},
+  {k:'brand-slack',l:'slack'},{k:'brand-google',l:'google'},{k:'brand-youtube',l:'youtube'},
+  {k:'brand-linkedin',l:'linkedin'},{k:'brand-twitter',l:'twitter'},{k:'mail',l:'mail'},
+  {k:'file-text',l:'doc'},{k:'folder',l:'folder'},{k:'chart-bar',l:'chart'},
+  {k:'database',l:'database'},{k:'settings',l:'settings'},{k:'shield',l:'security'},
+  {k:'code',l:'code'},{k:'terminal',l:'terminal'},{k:'cloud',l:'cloud'},
+  {k:'api',l:'api'},{k:'cpu',l:'cpu'},{k:'tool',l:'tools'},
+  {k:'users',l:'team'},{k:'user',l:'user'},{k:'bell',l:'alerts'},
+  {k:'calendar',l:'calendar'},{k:'book',l:'book'},{k:'star',l:'star'},
+  {k:'heart',l:'favorite'},{k:'rocket',l:'launch'},{k:'bulb',l:'idea'},
+  {k:'briefcase',l:'work'},{k:'building',l:'company'},{k:'map-pin',l:'location'},
+  {k:'shopping-cart',l:'shop'},{k:'credit-card',l:'billing'},{k:'report',l:'report'}
+];
+function buildPicker(){const p=document.getElementById('icon-picker');p.innerHTML='<div class="ip-label">Choose an icon</div>';ICONS.forEach(({k,l})=>{const b=document.createElement('button');b.className='ip-btn'+(k===selectedIcon?' sel':'');b.title=l;b.setAttribute('aria-label',l);b.innerHTML=`<i class="ti ti-${k}" aria-hidden="true"></i>`;b.onclick=()=>{selectedIcon=k;updateToggle();buildPicker()};p.appendChild(b)})}
+function updateToggle(){document.getElementById('cur-icon').className=`ti ti-${selectedIcon}`;const f=ICONS.find(i=>i.k===selectedIcon);document.getElementById('cur-label').textContent=f?f.l:selectedIcon}
+function togglePicker(){const p=document.getElementById('icon-picker');const o=p.style.display==='flex';p.style.display=o?'none':'flex';if(!o)buildPicker()}
+
+function addCard(){
+  const name=document.getElementById('lw-name').value.trim();
+  const raw=document.getElementById('lw-url').value.trim();
+  const pin=document.getElementById('lw-pin').checked;
+  if(!name){showErr('lw-err','Enter a display name.');return}
+  if(!raw){showErr('lw-err','Enter a URL.');return}
+  const url=raw.startsWith('http')?raw:'https://'+raw;
+  if(!isUrl(url)){showErr('lw-err','Enter a valid URL.');return}
+  cards.push({id:Date.now(),name,url,icon:selectedIcon,pin});
+  persist();
+  document.getElementById('lw-name').value='';document.getElementById('lw-url').value='';document.getElementById('lw-pin').checked=false;document.getElementById('icon-picker').style.display='none';
+  renderCards();updateStats();
+}
+function removeCard(id){cards=cards.filter(c=>c.id!==id);persist();renderCards();updateStats()}
+function togglePin(id){const c=cards.find(x=>x.id===id);if(c){c.pin=!c.pin;persist();renderCards();updateStats()}}
+function copyCardUrl(url,btnId){navigator.clipboard.writeText(url).then(()=>{const b=document.getElementById(btnId);if(b){const o=b.innerHTML;b.innerHTML='<i class="ti ti-check" aria-hidden="true"></i>';setTimeout(()=>b.innerHTML=o,1600)}})}
+function confirmRemoveCard(id){const c=document.getElementById('conf-'+id);if(c)c.style.display='flex'}
+function cancelRemoveCard(id){const c=document.getElementById('conf-'+id);if(c)c.style.display='none'}
+
+function makeCardEl(c){
+  const div=document.createElement('div');div.className='link-card'+(c.pin?' pinned':'');div.setAttribute('role','group');div.setAttribute('aria-label',c.name);
+  const cpId='cp-'+c.id;
+  div.innerHTML=`${c.pin?'<span class="pin-badge"><i class="ti ti-star" aria-hidden="true"></i></span>':''}<div class="card-icon${c.pin?' pinned-icon':''}"><i class="ti ti-${esc(c.icon)}" aria-hidden="true"></i></div><div class="card-name">${esc(c.name)}</div><div class="card-url">${esc(c.url)}</div><div class="card-actions"><button class="btn btn-icon btn-sm" title="Open" onclick="window.open('${esc(c.url)}','_blank');event.stopPropagation()"><i class="ti ti-external-link" aria-hidden="true"></i></button><button class="btn btn-icon btn-sm" id="${cpId}" title="Copy URL" onclick="copyCardUrl('${esc(c.url)}','${cpId}');event.stopPropagation()"><i class="ti ti-copy" aria-hidden="true"></i></button><button class="btn btn-icon btn-sm" title="${c.pin?'Unpin':'Pin'}" onclick="togglePin(${c.id});event.stopPropagation()"><i class="ti ti-${c.pin?'star-off':'star'}" aria-hidden="true"></i></button><button class="btn btn-icon btn-sm btn-danger" title="Remove" onclick="confirmRemoveCard(${c.id});event.stopPropagation()"><i class="ti ti-trash" aria-hidden="true"></i></button></div><div class="card-confirm" id="conf-${c.id}" onclick="event.stopPropagation()"><p>Remove this card?</p><div class="conf-btns"><button class="btn btn-sm" onclick="cancelRemoveCard(${c.id})">Cancel</button><button class="btn btn-sm btn-danger" onclick="removeCard(${c.id})" style="background:var(--bg-danger)">Remove</button></div></div>`;
+  div.addEventListener('click',()=>window.open(c.url,'_blank'));return div;
+}
+function renderCards(){
+  const q=(document.getElementById('card-search')?.value||'').toLowerCase().trim();
+  const filtered=q?cards.filter(c=>c.name.toLowerCase().includes(q)||c.url.toLowerCase().includes(q)):cards;
+  const pinned=filtered.filter(c=>c.pin),rest=filtered.filter(c=>!c.pin);
+  const pg=document.getElementById('pinned-grid'),cg=document.getElementById('card-grid');
+  pg.innerHTML='';cg.innerHTML='';
+  document.getElementById('pinned-label').style.display=pinned.length?'flex':'none';
+  document.getElementById('all-label').style.display=rest.length?'flex':'none';
+  document.getElementById('card-empty').style.display=cards.length===0?'flex':'none';
+  document.getElementById('card-no-results').style.display=(cards.length>0&&filtered.length===0)?'flex':'none';
+  pinned.forEach(c=>pg.appendChild(makeCardEl(c)));rest.forEach(c=>cg.appendChild(makeCardEl(c)));
+}
+
+function addTodo(){
+  const text=document.getElementById('todo-text').value.trim();
+  const status=document.getElementById('todo-status').value;
+  const date=document.getElementById('todo-date').value;
+  if(!text){showErr('todo-err','Enter a task.');return}
+  todos.push({id:Date.now(),text,status,date,created:new Date().toISOString()});
+  persist();document.getElementById('todo-text').value='';document.getElementById('todo-date').value='';renderTodos();updateStats();
+}
+function removeTodo(id){todos=todos.filter(t=>t.id!==id);persist();renderTodos();updateStats()}
+function setTodoStatus(id,status){const t=todos.find(x=>x.id===id);if(t){t.status=status;persist();renderTodos();updateStats()}}
+function setFilter(f){todoFilter=f;['all','pending','inprogress','complete'].forEach(x=>document.getElementById('f-'+x).classList.toggle('active',x===f));renderTodos()}
+
+const SM={pending:{cls:'s-pending',label:'Pending'},inprogress:{cls:'s-inprogress',label:'In progress'},complete:{cls:'s-complete',label:'Complete'}};
+function renderTodos(){
+  const list=document.getElementById('todo-list');
+  const filtered=todoFilter==='all'?todos:todos.filter(t=>t.status===todoFilter);
+  if(filtered.length===0){list.innerHTML=`<div class="empty-state"><i class="ti ti-checkbox" aria-hidden="true"></i><p>${todoFilter==='all'?'No tasks yet.':'No '+todoFilter+' tasks.'}</p></div>`;return}
+  list.innerHTML='';
+  [...filtered].sort((a,b)=>{const ao=isOverdue(a.date,a.status)?0:1,bo=isOverdue(b.date,b.status)?0:1;return ao-bo||new Date(b.created)-new Date(a.created)}).forEach(t=>{
+    const sm=SM[t.status]||SM.pending;const od=isOverdue(t.date,t.status);
+    const div=document.createElement('div');div.className='todo-item'+(od?' overdue':'');
+    div.innerHTML=`<div class="todo-top"><div class="todo-text${t.status==='complete'?' done':''}">${esc(t.text)}</div><div class="todo-actions"><select class="btn btn-sm" style="padding:3px 6px;font-size:11px;width:auto" onchange="setTodoStatus(${t.id},this.value)"><option value="pending"${t.status==='pending'?' selected':''}>Pending</option><option value="inprogress"${t.status==='inprogress'?' selected':''}>In progress</option><option value="complete"${t.status==='complete'?' selected':''}>Complete</option></select><button class="btn btn-icon btn-sm btn-danger" title="Remove" onclick="removeTodo(${t.id})"><i class="ti ti-trash" aria-hidden="true"></i></button></div></div><div class="todo-meta"><span class="status-badge ${sm.cls}">${sm.label}</span>${t.date?`<span class="todo-date${od?' overdue-date':''}"><i class="ti ti-calendar" aria-hidden="true"></i>${od?'⚠ Overdue · ':''}${fmtDate(t.date)}</span>`:''}<span class="todo-date"><i class="ti ti-clock" aria-hidden="true"></i>${new Date(t.created).toLocaleDateString('en-US',{month:'short',day:'numeric'})}</span></div>`;
+    list.appendChild(div);
+  });
+}
+
+function addCred(){
+  const site=document.getElementById('cr-site').value.trim();
+  const user=document.getElementById('cr-user').value.trim();
+  const pwd=document.getElementById('cr-pwd').value;
+  const note=document.getElementById('cr-note').value.trim();
+  if(!site){showErr('cr-err','Enter a site name.');return}
+  if(!user){showErr('cr-err','Enter a username.');return}
+  if(!pwd){showErr('cr-err','Enter a password.');return}
+  creds.push({id:Date.now(),site,user,pwd,note});
+  persist();document.getElementById('cr-site').value='';document.getElementById('cr-user').value='';document.getElementById('cr-pwd').value='';document.getElementById('cr-note').value='';renderCreds();updateStats();
+}
+function removeCred(id){creds=creds.filter(c=>c.id!==id);persist();renderCreds();updateStats()}
+function copyVal(val,btnId){navigator.clipboard.writeText(val).then(()=>{const b=document.getElementById(btnId);if(b){const o=b.innerHTML;b.innerHTML='<i class="ti ti-check" aria-hidden="true"></i>';setTimeout(()=>b.innerHTML=o,1600)}})}
+function togglePwd(id){const el=document.getElementById('pwd-val-'+id),btn=document.getElementById('eye-btn-'+id),h=el.classList.contains('hidden');el.textContent=h?(creds.find(c=>c.id===id)?.pwd||''):'••••••••';el.classList.toggle('hidden',!h);btn.innerHTML=`<i class="ti ti-eye${h?'-off':''}" aria-hidden="true"></i>`}
+function togglePwdInput(){const i=document.getElementById('cr-pwd'),ic=document.getElementById('eye-icon');i.type=i.type==='password'?'text':'password';ic.className='ti ti-eye'+(i.type==='text'?'-off':'')}
+function renderCreds(){
+  const q=(document.getElementById('cred-search')?.value||'').toLowerCase().trim();
+  const filtered=q?creds.filter(c=>c.site.toLowerCase().includes(q)||c.user.toLowerCase().includes(q)):creds;
+  const list=document.getElementById('cred-list');
+  document.getElementById('cred-empty').style.display=creds.length===0?'flex':'none';
+  document.getElementById('cred-no-results').style.display=(creds.length>0&&filtered.length===0)?'flex':'none';
+  list.innerHTML='';
+  [...filtered].reverse().forEach(c=>{
+    const div=document.createElement('div');div.className='cred-item';
+    const cpUid='cpu-'+c.id,cpPid='cpp-'+c.id,eyId='eye-btn-'+c.id,pvId='pwd-val-'+c.id;
+    div.innerHTML=`<div class="cred-header"><div class="cred-site-wrap"><div class="cred-icon"><i class="ti ti-lock" aria-hidden="true"></i></div><span class="cred-site">${esc(c.site)}</span></div><button class="btn btn-icon btn-sm btn-danger" title="Remove" onclick="removeCred(${c.id})"><i class="ti ti-trash" aria-hidden="true"></i></button></div><div class="cred-row"><span class="cred-label">User</span><span class="cred-val">${esc(c.user)}</span><div class="cred-actions"><button class="btn btn-icon btn-sm" id="${cpUid}" title="Copy" onclick="copyVal('${esc(c.user)}','${cpUid}')"><i class="ti ti-copy" aria-hidden="true"></i></button></div></div><div class="cred-row"><span class="cred-label">Password</span><span class="cred-val hidden" id="${pvId}">••••••••</span><div class="cred-actions"><button class="btn btn-icon btn-sm" id="${eyId}" title="Show/hide" onclick="togglePwd(${c.id})"><i class="ti ti-eye" aria-hidden="true"></i></button><button class="btn btn-icon btn-sm" id="${cpPid}" title="Copy" onclick="copyVal(creds.find(x=>x.id===${c.id})?.pwd||'','${cpPid}')"><i class="ti ti-copy" aria-hidden="true"></i></button></div></div>${c.note?`<div class="cred-note">${esc(c.note)}</div>`:''}`;
+    list.appendChild(div);
+  });
+}
+
+document.getElementById('lw-url').addEventListener('keydown',e=>{if(e.key==='Enter')addCard()});
+document.getElementById('lw-name').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('lw-url').focus()});
+document.getElementById('cr-pwd').addEventListener('keydown',e=>{if(e.key==='Enter')addCred()});
+</script>
+</body>
+</html>
