@@ -52,6 +52,36 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .stat-chip i{font-size:13px}
 .stat-chip b{color:var(--tx);font-weight:600}
 .top-clock{font-size:12px;color:var(--tx2);white-space:nowrap}
+
+/* ── MOBILE RESPONSIVE ── */
+@media(max-width:768px){
+  .app{grid-template-columns:1fr;grid-template-rows:auto auto 1fr}
+  .topbar{gap:6px;padding:0 .75rem;height:48px}
+  .topbar-brand{font-size:13px}
+  .topbar-brand i{font-size:17px}
+  .stat-chip{font-size:11px;padding:2px 7px;white-space:nowrap}
+  .top-clock{display:none}
+  .statbar{gap:10px;padding:0 .75rem;overflow-x:auto;font-size:11px}
+  .statbar .sb-sep{display:none}
+  .panel{height:auto;min-height:calc(100vh - 160px);padding:.75rem;display:none}
+  .panel.active{display:block !important}
+  .panel-left{border-right:none;border-bottom:.5px solid var(--bd)}
+  .panel-right{border-left:none}
+  .mobile-nav{display:flex !important}
+  #app-screen .app{padding-bottom:60px}
+  .link-grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}
+  .user-name{max-width:60px}
+  .user-dropdown{right:.75rem}
+}
+@media(min-width:769px){
+  .mobile-nav{display:none !important}
+  .panel{display:block !important}
+}
+/* bottom nav */
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:56px;background:var(--bg);border-top:.5px solid var(--bd);z-index:200;box-shadow:0 -2px 12px rgba(0,0,0,.1)}
+.mn-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;cursor:pointer;font-family:inherit;font-size:10px;font-weight:500;color:var(--tx2);transition:color .12s;padding:0}
+.mn-btn i{font-size:22px}
+.mn-btn.active{color:var(--tx-info)}
 .theme-btn,.icon-btn-top{background:none;border:.5px solid var(--bd);border-radius:var(--rm);cursor:pointer;padding:5px 8px;color:var(--tx2);font-size:16px;display:flex;align-items:center;transition:background .12s}
 .theme-btn:hover,.icon-btn-top:hover{background:var(--bg2)}
 
@@ -135,6 +165,32 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 .card-confirm{position:absolute;inset:0;background:var(--bg-danger);border-radius:var(--rl);display:none;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:8px}
 .card-confirm p{font-size:11px;color:var(--tx-danger);font-weight:500;text-align:center}
 .card-confirm .conf-btns{display:flex;gap:5px}
+
+/* ── Categories ── */
+.cat-section{margin-bottom:1.25rem}
+.cat-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;gap:8px}
+.cat-header-left{display:flex;align-items:center;gap:7px;flex:1;min-width:0}
+.cat-name-display{font-size:11px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.06em;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cat-count{font-size:10px;color:var(--tx3);background:var(--bg3);border-radius:20px;padding:1px 7px;white-space:nowrap}
+.cat-actions{display:flex;gap:3px;flex-shrink:0}
+.cat-drop-zone{min-height:70px;border:1.5px dashed var(--bd);border-radius:var(--rl);padding:6px;display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:8px;transition:border-color .15s,background .15s}
+.cat-drop-zone.drag-over{border-color:var(--tx-info);background:var(--bg-info)}
+.cat-drop-zone.empty-zone{display:flex;align-items:center;justify-content:center}
+.cat-drop-zone.empty-zone::after{content:"Drop cards here";font-size:11px;color:var(--tx3);font-style:italic}
+.link-card[draggable]{cursor:grab}
+.link-card.dragging{opacity:.4;cursor:grabbing}
+/* manage categories box */
+.cat-manage-box{background:var(--bg);border:.5px solid var(--bd);border-radius:var(--rl);padding:10px 12px;margin-bottom:1rem}
+.cat-manage-title{font-size:11px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.cat-list{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.cat-chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;background:var(--bg2);border:.5px solid var(--bd);border-radius:20px;padding:3px 10px;color:var(--tx)}
+.cat-chip button{background:none;border:none;cursor:pointer;color:var(--tx3);font-size:12px;padding:0;line-height:1;display:flex}
+.cat-chip button:hover{color:var(--tx-danger)}
+.cat-add-row{display:flex;gap:6px}
+.cat-add-row input{flex:1;font-size:13px}
+@media(max-width:768px){
+  .cat-drop-zone{grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}
+}
 
 .section-divider{font-size:10px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.06em;margin:1rem 0 .5rem;display:flex;align-items:center;gap:8px}
 .section-divider::after{content:'';flex:1;height:.5px;background:var(--bd)}
@@ -299,6 +355,8 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
   <!-- CENTER: LINK CARDS -->
   <main class="panel panel-center">
     <div class="panel-title"><i class="ti ti-link" aria-hidden="true"></i> Link cards</div>
+
+    <!-- Add card form -->
     <div class="form-box">
       <button class="form-toggle" id="card-toggle" onclick="toggleForm('card')">
         <span style="display:flex;align-items:center;gap:6px"><i class="ti ti-plus-circle" aria-hidden="true"></i> Add new link card</span>
@@ -320,22 +378,41 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
             <div class="icon-picker" id="icon-picker"></div>
           </div>
           <div class="field" style="flex:1;margin-bottom:0">
-            <label>Priority</label>
-            <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;text-transform:none;letter-spacing:0;color:var(--tx);font-weight:400">
-              <input type="checkbox" id="lw-pin" style="width:auto;accent-color:var(--tx-warning)"/> Pin to top
-            </label>
+            <label for="lw-cat">Category</label>
+            <select id="lw-cat"><option value="">— Uncategorized —</option></select>
           </div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;color:var(--tx)">
+            <input type="checkbox" id="lw-pin" style="width:auto;accent-color:var(--tx-warning)"/> Pin to top
+          </label>
         </div>
         <div class="err" id="lw-err"></div>
         <button class="btn btn-primary" onclick="addCard()" style="width:100%;justify-content:center"><i class="ti ti-plus" aria-hidden="true"></i> Add card</button>
       </div>
     </div>
+
+    <!-- Manage categories -->
+    <div class="cat-manage-box">
+      <div class="cat-manage-title"><i class="ti ti-folder" aria-hidden="true"></i> Categories</div>
+      <div class="cat-list" id="cat-chip-list"></div>
+      <div class="cat-add-row">
+        <input type="text" id="new-cat-input" placeholder="New category name…" onkeydown="if(event.key==='Enter')addCategory()"/>
+        <button class="btn btn-sm btn-primary" onclick="addCategory()"><i class="ti ti-plus" aria-hidden="true"></i> Add</button>
+      </div>
+    </div>
+
+    <!-- Search -->
     <div class="search-wrap"><i class="ti ti-search" aria-hidden="true"></i><input type="text" id="card-search" placeholder="Search link cards…" oninput="renderCards()"/></div>
-    <div class="section-divider" id="pinned-label" style="display:none"><i class="ti ti-star" aria-hidden="true"></i> Pinned</div>
-    <div class="link-grid" id="pinned-grid"></div>
-    <div class="section-divider" id="all-label" style="display:none"><i class="ti ti-layout-grid" aria-hidden="true"></i> All links</div>
-    <div class="link-grid" id="card-grid"></div>
-    <div class="empty-state" id="card-empty" style="display:none"><i class="ti ti-link-off" aria-hidden="true"></i><p>No link cards yet.</p></div>
+
+    <!-- Pinned section -->
+    <div class="section-divider" id="pinned-label" style="display:none"><i class="ti ti-star" style="color:var(--tx-warning)" aria-hidden="true"></i> Pinned</div>
+    <div class="cat-drop-zone link-grid" id="pinned-grid" data-cat="__pinned__"></div>
+
+    <!-- Category sections rendered here -->
+    <div id="cat-sections"></div>
+
+    <div class="empty-state" id="card-empty" style="display:none"><i class="ti ti-link-off" aria-hidden="true"></i><p>No link cards yet — add one above.</p></div>
     <div class="empty-state" id="card-no-results" style="display:none"><i class="ti ti-search-off" aria-hidden="true"></i><p>No cards match your search.</p></div>
   </main>
 
@@ -368,6 +445,21 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
     <div class="empty-state" id="cred-no-results" style="display:none"><i class="ti ti-search-off" aria-hidden="true"></i><p>No credentials match your search.</p></div>
   </aside>
 
+  <!-- Mobile bottom nav -->
+  <nav class="mobile-nav" id="mobile-nav">
+    <button class="mn-btn" id="mn-todo" onclick="switchTab('todo')">
+      <i class="ti ti-checkbox" aria-hidden="true"></i>
+      <span>To-do</span>
+    </button>
+    <button class="mn-btn active" id="mn-links" onclick="switchTab('links')">
+      <i class="ti ti-link" aria-hidden="true"></i>
+      <span>Links</span>
+    </button>
+    <button class="mn-btn" id="mn-creds" onclick="switchTab('creds')">
+      <i class="ti ti-lock" aria-hidden="true"></i>
+      <span>Vault</span>
+    </button>
+  </nav>
 </div>
 </div><!-- #app-screen -->
 
@@ -462,11 +554,9 @@ async function loadUserData(uid) {
       window._cards = Array.isArray(d.cards) ? d.cards : [];
       window._todos = Array.isArray(d.todos) ? d.todos : [];
       window._creds = Array.isArray(d.creds) ? d.creds : [];
+      window._cats  = Array.isArray(d.cats)  ? d.cats  : [];
     } else {
-      // New user — no data yet
-      window._cards = [];
-      window._todos = [];
-      window._creds = [];
+      window._cards = []; window._todos = []; window._creds = []; window._cats = [];
     }
   } catch(e) {
     console.error('Failed to load user data:', e);
@@ -482,7 +572,8 @@ window.saveUserData = async () => {
     await setDoc(doc(db, 'users', currentUser.uid), {
       cards: window._cards || [],
       todos: window._todos || [],
-      creds: window._creds || []
+      creds: window._creds || [],
+      cats:  window._cats  || []
     });
   } catch(e) {
     console.error('Failed to save user data:', e);
@@ -506,15 +597,36 @@ var cards=[], todos=[], creds=[], todoFilter='all', selectedIcon='link';
 
 /* ── App logic (runs after Firebase loads data) ── */
 window.initApp = function() {
-  cards = window._cards ? JSON.parse(JSON.stringify(window._cards)) : [];
-  todos = window._todos ? JSON.parse(JSON.stringify(window._todos)) : [];
-  creds = window._creds ? JSON.parse(JSON.stringify(window._creds)) : [];
+  cards      = window._cards ? JSON.parse(JSON.stringify(window._cards)) : [];
+  todos      = window._todos ? JSON.parse(JSON.stringify(window._todos)) : [];
+  creds      = window._creds ? JSON.parse(JSON.stringify(window._creds)) : [];
+  categories = window._cats  ? JSON.parse(JSON.stringify(window._cats))  : [];
+  renderCatChips();
+  renderCatSelect();
   renderCards(); renderTodos(); renderCreds(); setFilter('all'); updateStats();
   initTheme(); tick(); setInterval(tick, 1000);
+  if(window.innerWidth <= 768) switchTab('links');
 };
 
+function switchTab(tab) {
+  const panels = {
+    todo:  document.querySelector('.panel-left'),
+    links: document.querySelector('.panel-center'),
+    creds: document.querySelector('.panel-right')
+  };
+  const btns = {
+    todo:  document.getElementById('mn-todo'),
+    links: document.getElementById('mn-links'),
+    creds: document.getElementById('mn-creds')
+  };
+  Object.keys(panels).forEach(k => {
+    if(panels[k]) panels[k].classList.toggle('active', k === tab);
+    if(btns[k])   btns[k].classList.toggle('active',  k === tab);
+  });
+}
+
 function persist() {
-  window._cards = cards; window._todos = todos; window._creds = creds;
+  window._cards = cards; window._todos = todos; window._creds = creds; window._cats = categories;
   if (window.saveUserData) window.saveUserData();
 }
 
@@ -574,42 +686,222 @@ function buildPicker(){const p=document.getElementById('icon-picker');p.innerHTM
 function updateToggle(){document.getElementById('cur-icon').className=`ti ti-${selectedIcon}`;const f=ICONS.find(i=>i.k===selectedIcon);document.getElementById('cur-label').textContent=f?f.l:selectedIcon}
 function togglePicker(){const p=document.getElementById('icon-picker');const o=p.style.display==='flex';p.style.display=o?'none':'flex';if(!o)buildPicker()}
 
+/* ══ CATEGORIES ══ */
+var categories = []; // [{id, name}]
+var dragCardId = null;
+
+function addCategory(){
+  const inp = document.getElementById('new-cat-input');
+  const name = inp.value.trim();
+  if(!name) return;
+  if(categories.find(c=>c.name.toLowerCase()===name.toLowerCase())){inp.value='';return}
+  categories.push({id:'cat-'+Date.now(), name});
+  inp.value='';
+  persistCats();
+  renderCatChips();
+  renderCatSelect();
+  renderCards();
+}
+
+function removeCategory(id){
+  // Move cards in this category to uncategorized
+  cards.forEach(c=>{ if(c.cat===id) c.cat=''; });
+  categories = categories.filter(c=>c.id!==id);
+  persistCats();
+  persist();
+  renderCatChips();
+  renderCatSelect();
+  renderCards();
+}
+
+function persistCats(){
+  window._cats = categories;
+  if(window.saveUserData) window.saveUserData();
+}
+
+function renderCatChips(){
+  const list = document.getElementById('cat-chip-list');
+  if(!list) return;
+  if(categories.length===0){
+    list.innerHTML='<span style="font-size:11px;color:var(--tx3);font-style:italic">No categories yet — add one below</span>';
+    return;
+  }
+  list.innerHTML='';
+  categories.forEach(cat=>{
+    const chip = document.createElement('span');
+    chip.className='cat-chip';
+    chip.innerHTML=`<i class="ti ti-folder" style="font-size:13px;color:var(--tx-info)" aria-hidden="true"></i>${esc(cat.name)}<button onclick="removeCategory('${cat.id}')" title="Remove category"><i class="ti ti-x" aria-hidden="true"></i></button>`;
+    list.appendChild(chip);
+  });
+}
+
+function renderCatSelect(){
+  const sel = document.getElementById('lw-cat');
+  if(!sel) return;
+  const cur = sel.value;
+  sel.innerHTML='<option value="">— Uncategorized —</option>';
+  categories.forEach(cat=>{
+    const o = document.createElement('option');
+    o.value=cat.id; o.textContent=cat.name;
+    if(cat.id===cur) o.selected=true;
+    sel.appendChild(o);
+  });
+}
+
+/* ══ DRAG & DROP ══ */
+function onDragStart(e, cardId){
+  dragCardId = cardId;
+  setTimeout(()=>{ const el=document.getElementById('card-el-'+cardId); if(el) el.classList.add('dragging'); },0);
+  e.dataTransfer.effectAllowed='move';
+}
+function onDragEnd(cardId){
+  const el=document.getElementById('card-el-'+cardId);
+  if(el) el.classList.remove('dragging');
+  dragCardId=null;
+  document.querySelectorAll('.cat-drop-zone').forEach(z=>z.classList.remove('drag-over'));
+}
+function onDragOver(e){ e.preventDefault(); e.dataTransfer.dropEffect='move'; }
+function onDragEnter(e, zoneEl){ zoneEl.classList.add('drag-over'); }
+function onDragLeave(e, zoneEl){
+  if(!zoneEl.contains(e.relatedTarget)) zoneEl.classList.remove('drag-over');
+}
+function onDrop(e, targetCat){
+  e.preventDefault();
+  document.querySelectorAll('.cat-drop-zone').forEach(z=>z.classList.remove('drag-over'));
+  if(dragCardId===null) return;
+  const card = cards.find(c=>c.id===dragCardId);
+  if(!card) return;
+  if(targetCat==='__pinned__'){
+    card.pin=true;
+  } else {
+    card.pin=false;
+    card.cat=targetCat;
+  }
+  persist();
+  renderCards();
+  updateStats();
+}
+
+/* ══ CARD FUNCTIONS ══ */
 function addCard(){
   const name=document.getElementById('lw-name').value.trim();
   const raw=document.getElementById('lw-url').value.trim();
   const pin=document.getElementById('lw-pin').checked;
+  const cat=document.getElementById('lw-cat')?.value||'';
   if(!name){showErr('lw-err','Enter a display name.');return}
   if(!raw){showErr('lw-err','Enter a URL.');return}
   const url=raw.startsWith('http')?raw:'https://'+raw;
   if(!isUrl(url)){showErr('lw-err','Enter a valid URL.');return}
-  cards.push({id:Date.now(),name,url,icon:selectedIcon,pin});
+  cards.push({id:Date.now(),name,url,icon:selectedIcon,pin,cat});
   persist();
-  document.getElementById('lw-name').value='';document.getElementById('lw-url').value='';document.getElementById('lw-pin').checked=false;document.getElementById('icon-picker').style.display='none';
+  document.getElementById('lw-name').value='';
+  document.getElementById('lw-url').value='';
+  document.getElementById('lw-pin').checked=false;
+  document.getElementById('icon-picker').style.display='none';
+  if(document.getElementById('lw-cat')) document.getElementById('lw-cat').value='';
   renderCards();updateStats();
 }
+
 function removeCard(id){cards=cards.filter(c=>c.id!==id);persist();renderCards();updateStats()}
-function togglePin(id){const c=cards.find(x=>x.id===id);if(c){c.pin=!c.pin;persist();renderCards();updateStats()}}
+function togglePin(id){const c=cards.find(x=>x.id===id);if(c){c.pin=!c.pin;if(c.pin)c.cat='';persist();renderCards();updateStats()}}
 function copyCardUrl(url,btnId){navigator.clipboard.writeText(url).then(()=>{const b=document.getElementById(btnId);if(b){const o=b.innerHTML;b.innerHTML='<i class="ti ti-check" aria-hidden="true"></i>';setTimeout(()=>b.innerHTML=o,1600)}})}
 function confirmRemoveCard(id){const c=document.getElementById('conf-'+id);if(c)c.style.display='flex'}
 function cancelRemoveCard(id){const c=document.getElementById('conf-'+id);if(c)c.style.display='none'}
 
 function makeCardEl(c){
-  const div=document.createElement('div');div.className='link-card'+(c.pin?' pinned':'');div.setAttribute('role','group');div.setAttribute('aria-label',c.name);
+  const div=document.createElement('div');
+  div.className='link-card'+(c.pin?' pinned':'');
+  div.id='card-el-'+c.id;
+  div.setAttribute('role','group');
+  div.setAttribute('aria-label',c.name);
+  div.setAttribute('draggable','true');
+  div.addEventListener('dragstart',e=>onDragStart(e,c.id));
+  div.addEventListener('dragend',()=>onDragEnd(c.id));
   const cpId='cp-'+c.id;
-  div.innerHTML=`${c.pin?'<span class="pin-badge"><i class="ti ti-star" aria-hidden="true"></i></span>':''}<div class="card-icon${c.pin?' pinned-icon':''}"><i class="ti ti-${esc(c.icon)}" aria-hidden="true"></i></div><div class="card-name">${esc(c.name)}</div><div class="card-url">${esc(c.url)}</div><div class="card-actions"><button class="btn btn-icon btn-sm" title="Open" onclick="window.open('${esc(c.url)}','_blank');event.stopPropagation()"><i class="ti ti-external-link" aria-hidden="true"></i></button><button class="btn btn-icon btn-sm" id="${cpId}" title="Copy URL" onclick="copyCardUrl('${esc(c.url)}','${cpId}');event.stopPropagation()"><i class="ti ti-copy" aria-hidden="true"></i></button><button class="btn btn-icon btn-sm" title="${c.pin?'Unpin':'Pin'}" onclick="togglePin(${c.id});event.stopPropagation()"><i class="ti ti-${c.pin?'star-off':'star'}" aria-hidden="true"></i></button><button class="btn btn-icon btn-sm btn-danger" title="Remove" onclick="confirmRemoveCard(${c.id});event.stopPropagation()"><i class="ti ti-trash" aria-hidden="true"></i></button></div><div class="card-confirm" id="conf-${c.id}" onclick="event.stopPropagation()"><p>Remove this card?</p><div class="conf-btns"><button class="btn btn-sm" onclick="cancelRemoveCard(${c.id})">Cancel</button><button class="btn btn-sm btn-danger" onclick="removeCard(${c.id})" style="background:var(--bg-danger)">Remove</button></div></div>`;
-  div.addEventListener('click',()=>window.open(c.url,'_blank'));return div;
+  div.innerHTML=`
+    ${c.pin?'<span class="pin-badge"><i class="ti ti-star" aria-hidden="true"></i></span>':''}
+    <div class="card-icon${c.pin?' pinned-icon':''}"><i class="ti ti-${esc(c.icon)}" aria-hidden="true"></i></div>
+    <div class="card-name">${esc(c.name)}</div>
+    <div class="card-url">${esc(c.url)}</div>
+    <div class="card-actions">
+      <button class="btn btn-icon btn-sm" title="Open" onclick="window.open('${esc(c.url)}','_blank');event.stopPropagation()"><i class="ti ti-external-link" aria-hidden="true"></i></button>
+      <button class="btn btn-icon btn-sm" id="${cpId}" title="Copy URL" onclick="copyCardUrl('${esc(c.url)}','${cpId}');event.stopPropagation()"><i class="ti ti-copy" aria-hidden="true"></i></button>
+      <button class="btn btn-icon btn-sm" title="${c.pin?'Unpin':'Pin'}" onclick="togglePin(${c.id});event.stopPropagation()"><i class="ti ti-${c.pin?'star-off':'star'}" aria-hidden="true"></i></button>
+      <button class="btn btn-icon btn-sm btn-danger" title="Remove" onclick="confirmRemoveCard(${c.id});event.stopPropagation()"><i class="ti ti-trash" aria-hidden="true"></i></button>
+    </div>
+    <div class="card-confirm" id="conf-${c.id}" onclick="event.stopPropagation()">
+      <p>Remove this card?</p>
+      <div class="conf-btns">
+        <button class="btn btn-sm" onclick="cancelRemoveCard(${c.id})">Cancel</button>
+        <button class="btn btn-sm btn-danger" onclick="removeCard(${c.id})" style="background:var(--bg-danger)">Remove</button>
+      </div>
+    </div>`;
+  div.addEventListener('click',()=>window.open(c.url,'_blank'));
+  return div;
 }
+
+function makeDropZone(catId){
+  const zone = document.createElement('div');
+  zone.className='cat-drop-zone';
+  zone.dataset.cat=catId;
+  zone.addEventListener('dragover', onDragOver);
+  zone.addEventListener('dragenter', e=>onDragEnter(e, zone));
+  zone.addEventListener('dragleave', e=>onDragLeave(e, zone));
+  zone.addEventListener('drop', e=>onDrop(e, catId));
+  return zone;
+}
+
 function renderCards(){
   const q=(document.getElementById('card-search')?.value||'').toLowerCase().trim();
   const filtered=q?cards.filter(c=>c.name.toLowerCase().includes(q)||c.url.toLowerCase().includes(q)):cards;
-  const pinned=filtered.filter(c=>c.pin),rest=filtered.filter(c=>!c.pin);
-  const pg=document.getElementById('pinned-grid'),cg=document.getElementById('card-grid');
-  pg.innerHTML='';cg.innerHTML='';
-  document.getElementById('pinned-label').style.display=pinned.length?'flex':'none';
-  document.getElementById('all-label').style.display=rest.length?'flex':'none';
+
+  // Pinned section
+  const pinned=filtered.filter(c=>c.pin);
+  const pg=document.getElementById('pinned-grid');
+  if(pg){
+    pg.innerHTML='';
+    pg.classList.toggle('empty-zone', pinned.length===0);
+    pinned.forEach(c=>pg.appendChild(makeCardEl(c)));
+    // drop events on pinned zone
+    pg.addEventListener('dragover', onDragOver);
+    pg.addEventListener('dragenter', e=>onDragEnter(e,pg));
+    pg.addEventListener('dragleave', e=>onDragLeave(e,pg));
+    pg.addEventListener('drop', e=>onDrop(e,'__pinned__'));
+    document.getElementById('pinned-label').style.display='flex';
+  }
+
+  // Category sections
+  const catSections = document.getElementById('cat-sections');
+  if(catSections){
+    catSections.innerHTML='';
+    // Uncategorized (not pinned, no cat or cat not found)
+    const validCatIds = categories.map(c=>c.id);
+    const uncatCards = filtered.filter(c=>!c.pin&&(!c.cat||!validCatIds.includes(c.cat)));
+    const section0 = document.createElement('div');
+    section0.className='cat-section';
+    section0.innerHTML=`<div class="cat-header"><div class="cat-header-left"><span class="cat-name-display"><i class="ti ti-layout-grid" style="font-size:12px;vertical-align:-1px;margin-right:4px" aria-hidden="true"></i>Uncategorized</span><span class="cat-count">${uncatCards.length}</span></div></div>`;
+    const zone0 = makeDropZone('');
+    zone0.classList.toggle('empty-zone', uncatCards.length===0);
+    uncatCards.forEach(c=>zone0.appendChild(makeCardEl(c)));
+    section0.appendChild(zone0);
+    catSections.appendChild(section0);
+
+    // Each named category
+    categories.forEach(cat=>{
+      const catCards = filtered.filter(c=>!c.pin&&c.cat===cat.id);
+      const section = document.createElement('div');
+      section.className='cat-section';
+      section.innerHTML=`<div class="cat-header"><div class="cat-header-left"><span class="cat-name-display"><i class="ti ti-folder" style="font-size:12px;vertical-align:-1px;margin-right:4px;color:var(--tx-info)" aria-hidden="true"></i>${esc(cat.name)}</span><span class="cat-count">${catCards.length}</span></div></div>`;
+      const zone = makeDropZone(cat.id);
+      zone.classList.toggle('empty-zone', catCards.length===0);
+      catCards.forEach(c=>zone.appendChild(makeCardEl(c)));
+      section.appendChild(zone);
+      catSections.appendChild(section);
+    });
+  }
+
   document.getElementById('card-empty').style.display=cards.length===0?'flex':'none';
   document.getElementById('card-no-results').style.display=(cards.length>0&&filtered.length===0)?'flex':'none';
-  pinned.forEach(c=>pg.appendChild(makeCardEl(c)));rest.forEach(c=>cg.appendChild(makeCardEl(c)));
 }
 
 function addTodo(){
