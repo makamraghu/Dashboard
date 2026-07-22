@@ -206,11 +206,7 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
       <span>Continue with GitHub</span>
       <i class="ti ti-arrow-right arrow" aria-hidden="true"></i>
     </button>
-    <button class="oauth-btn" id="btn-microsoft" onclick="signIn('microsoft')">
-      <img src="https://www.microsoft.com/favicon.ico" alt="Microsoft"/>
-      <span>Continue with Microsoft</span>
-      <i class="ti ti-arrow-right arrow" aria-hidden="true"></i>
-    </button>
+
 
     <div class="login-error" id="login-error"></div>
     <div class="login-footer">
@@ -378,7 +374,7 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, signInWithPopup, GoogleAuthProvider, GithubAuthProvider, OAuthProvider, signOut as fbSignOut, onAuthStateChanged }
+import { getAuth, signInWithPopup, GoogleAuthProvider, GithubAuthProvider, signOut as fbSignOut, onAuthStateChanged }
   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getFirestore, doc, setDoc, getDoc }
   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
@@ -403,9 +399,8 @@ let currentUser = null;
 
 /* ── Auth providers ── */
 const providers = {
-  google:    new GoogleAuthProvider(),
-  github:    new GithubAuthProvider(),
-  microsoft: new OAuthProvider('microsoft.com')
+  google: new GoogleAuthProvider(),
+  github: new GithubAuthProvider()
 };
 
 window.signIn = async (type) => {
@@ -460,24 +455,39 @@ onAuthStateChanged(auth, async (user) => {
 
 /* ── Firestore data ── */
 async function loadUserData(uid) {
-  const snap = await getDoc(doc(db, 'users', uid));
-  if (snap.exists()) {
-    const d = snap.data();
-    window._cards = d.cards || [];
-    window._todos = d.todos || [];
-    window._creds = d.creds || [];
-  } else {
-    window._cards = []; window._todos = []; window._creds = [];
+  try {
+    const snap = await getDoc(doc(db, 'users', uid));
+    if (snap.exists()) {
+      const d = snap.data();
+      window._cards = Array.isArray(d.cards) ? d.cards : [];
+      window._todos = Array.isArray(d.todos) ? d.todos : [];
+      window._creds = Array.isArray(d.creds) ? d.creds : [];
+    } else {
+      // New user — no data yet
+      window._cards = [];
+      window._todos = [];
+      window._creds = [];
+    }
+  } catch(e) {
+    console.error('Failed to load user data:', e);
+    window._cards = [];
+    window._todos = [];
+    window._creds = [];
   }
 }
 
 window.saveUserData = async () => {
   if (!currentUser) return;
-  await setDoc(doc(db, 'users', currentUser.uid), {
-    cards: window._cards,
-    todos: window._todos,
-    creds: window._creds
-  });
+  try {
+    await setDoc(doc(db, 'users', currentUser.uid), {
+      cards: window._cards || [],
+      todos: window._todos || [],
+      creds: window._creds || []
+    });
+  } catch(e) {
+    console.error('Failed to save user data:', e);
+    alert('⚠️ Could not save data. Check your Firestore rules.');
+  }
 };
 
 window.toggleDropdown = () => {
@@ -491,11 +501,14 @@ document.addEventListener('click', (e) => {
 </script>
 
 <script>
+/* ── App state (declared first to avoid hoisting issues) ── */
+var cards=[], todos=[], creds=[], todoFilter='all', selectedIcon='link';
+
 /* ── App logic (runs after Firebase loads data) ── */
 window.initApp = function() {
-  cards = window._cards || [];
-  todos = window._todos || [];
-  creds = window._creds || [];
+  cards = window._cards ? JSON.parse(JSON.stringify(window._cards)) : [];
+  todos = window._todos ? JSON.parse(JSON.stringify(window._todos)) : [];
+  creds = window._creds ? JSON.parse(JSON.stringify(window._creds)) : [];
   renderCards(); renderTodos(); renderCreds(); setFilter('all'); updateStats();
   initTheme(); tick(); setInterval(tick, 1000);
 };
@@ -504,8 +517,6 @@ function persist() {
   window._cards = cards; window._todos = todos; window._creds = creds;
   if (window.saveUserData) window.saveUserData();
 }
-
-let cards=[], todos=[], creds=[], todoFilter='all', selectedIcon='link';
 
 function initTheme(){
   const saved=localStorage.getItem('lw_theme');
