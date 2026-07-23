@@ -41,6 +41,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .oauth-btn .arrow{color:var(--tx3);font-size:14px}
 .login-error{font-size:12px;color:var(--tx-danger);background:var(--bg-danger);border-radius:var(--rm);padding:8px 12px;margin-top:12px;display:none}
 .login-footer{margin-top:1.5rem;font-size:11px;color:var(--tx3);line-height:1.6}
+.login-success{font-size:12px;color:var(--tx-success);background:var(--bg-success);border-radius:var(--rm);padding:8px 12px;margin-top:12px;display:none}
+.email-field{display:flex;flex-direction:column;gap:4px;margin-bottom:10px;text-align:left}
+.email-field label{font-size:11px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.04em}
+.email-field input{font-family:inherit;font-size:13px;color:var(--tx);background:var(--bg2);border:.5px solid var(--bd);border-radius:var(--rm);padding:8px 10px;width:100%;outline:none;transition:border-color .15s,box-shadow .15s}
+.email-field input:focus{border-color:var(--tx-info);box-shadow:0 0 0 3px rgba(24,95,165,.1)}
+.email-field input::placeholder{color:var(--tx2);opacity:.55}
+.pwd-wrap{display:flex;gap:6px}
+.pwd-wrap input{flex:1}
+.pwd-eye{background:var(--bg2);border:.5px solid var(--bd);border-radius:var(--rm);cursor:pointer;padding:0 8px;color:var(--tx2);font-size:15px;display:flex;align-items:center;flex-shrink:0}
+.pwd-eye:hover{background:var(--bg3)}
+.email-btn{width:100%;padding:10px;border:.5px solid var(--bd-info);border-radius:var(--rm);background:var(--bg-info);color:var(--tx-info);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:background .12s,transform .1s}
+.email-btn:hover{background:var(--bg-info);border-color:var(--tx-info)}
+.email-btn:active{transform:scale(.98)}
+.link-btn{background:none;border:none;cursor:pointer;font-family:inherit;font-size:12px;color:var(--tx-info);padding:0;text-decoration:underline}
+.link-btn:hover{opacity:.8}
 
 /* ── APP SCREEN ── */
 #app-screen{display:none}
@@ -250,21 +265,88 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
   <div class="login-card">
     <div class="login-logo"><i class="ti ti-layout-dashboard" aria-hidden="true"></i></div>
     <div class="login-title">My Dashboard</div>
-    <div class="login-sub">Sign in to access your personal link cards, tasks, and credentials vault.</div>
+    <div class="login-sub" id="login-sub">Sign in to access your personal link cards, tasks, and credentials vault.</div>
 
-    <button class="oauth-btn" id="btn-google" onclick="signIn('google')">
-      <img src="https://www.google.com/favicon.ico" alt="Google"/>
-      <span>Continue with Google</span>
-      <i class="ti ti-arrow-right arrow" aria-hidden="true"></i>
-    </button>
-    <button class="oauth-btn" id="btn-github" onclick="signIn('github')">
-      <i class="ti ti-brand-github" aria-hidden="true" style="font-size:20px;width:20px;height:20px"></i>
-      <span>Continue with GitHub</span>
-      <i class="ti ti-arrow-right arrow" aria-hidden="true"></i>
-    </button>
+    <!-- OAuth -->
+    <div id="oauth-section">
+      <button class="oauth-btn" id="btn-google" onclick="signIn('google')">
+        <img src="https://www.google.com/favicon.ico" alt="Google"/>
+        <span>Continue with Google</span>
+        <i class="ti ti-arrow-right arrow" aria-hidden="true"></i>
+      </button>
+      <button class="oauth-btn" id="btn-github" onclick="signIn('github')">
+        <i class="ti ti-brand-github" aria-hidden="true" style="font-size:20px;width:20px;height:20px"></i>
+        <span>Continue with GitHub</span>
+        <i class="ti ti-arrow-right arrow" aria-hidden="true"></i>
+      </button>
+      <div class="login-divider">or use email</div>
+    </div>
 
+    <!-- Email SIGN IN -->
+    <div id="email-login-section">
+      <div class="email-field">
+        <label>Email</label>
+        <input type="text" id="login-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')document.getElementById('login-pwd').focus()"/>
+      </div>
+      <div class="email-field">
+        <label>Password</label>
+        <div class="pwd-wrap">
+          <input type="password" id="login-pwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')emailSignIn()"/>
+          <button class="pwd-eye" onclick="toggleEye('login-pwd','eye-li')" tabindex="-1"><i class="ti ti-eye" id="eye-li"></i></button>
+        </div>
+      </div>
+      <button class="email-btn" id="btn-email-li" onclick="emailSignIn()"><i class="ti ti-login" aria-hidden="true"></i> Sign in</button>
+      <div style="display:flex;justify-content:space-between;margin-top:10px">
+        <button class="link-btn" onclick="showForgot()">Forgot password?</button>
+        <button class="link-btn" onclick="showRegister()">Create account →</button>
+      </div>
+    </div>
+
+    <!-- Email REGISTER -->
+    <div id="email-register-section" style="display:none">
+      <div class="email-field">
+        <label>Full name</label>
+        <input type="text" id="reg-name" placeholder="Your name" onkeydown="if(event.key==='Enter')document.getElementById('reg-email').focus()"/>
+      </div>
+      <div class="email-field">
+        <label>Email</label>
+        <input type="text" id="reg-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')document.getElementById('reg-pwd').focus()"/>
+      </div>
+      <div class="email-field">
+        <label>Password <span style="font-weight:400;color:var(--tx3)">(min 6 chars)</span></label>
+        <div class="pwd-wrap">
+          <input type="password" id="reg-pwd" placeholder="••••••••" onkeydown="if(event.key==='Enter')document.getElementById('reg-pwd2').focus()"/>
+          <button class="pwd-eye" onclick="toggleEye('reg-pwd','eye-rp')" tabindex="-1"><i class="ti ti-eye" id="eye-rp"></i></button>
+        </div>
+      </div>
+      <div class="email-field">
+        <label>Confirm password</label>
+        <div class="pwd-wrap">
+          <input type="password" id="reg-pwd2" placeholder="••••••••" onkeydown="if(event.key==='Enter')emailRegister()"/>
+          <button class="pwd-eye" onclick="toggleEye('reg-pwd2','eye-rp2')" tabindex="-1"><i class="ti ti-eye" id="eye-rp2"></i></button>
+        </div>
+      </div>
+      <button class="email-btn" id="btn-email-reg" onclick="emailRegister()"><i class="ti ti-user-plus" aria-hidden="true"></i> Create account</button>
+      <div style="text-align:center;margin-top:10px;font-size:12px">
+        Already have an account? <button class="link-btn" onclick="showLogin()">Sign in →</button>
+      </div>
+    </div>
+
+    <!-- FORGOT PASSWORD -->
+    <div id="forgot-section" style="display:none">
+      <p style="font-size:13px;color:var(--tx2);margin-bottom:12px;text-align:left">Enter your email and we will send you a password reset link.</p>
+      <div class="email-field">
+        <label>Email</label>
+        <input type="text" id="forgot-email" placeholder="you@example.com" onkeydown="if(event.key==='Enter')sendReset()"/>
+      </div>
+      <button class="email-btn" id="btn-forgot" onclick="sendReset()"><i class="ti ti-send" aria-hidden="true"></i> Send reset link</button>
+      <div style="text-align:center;margin-top:10px">
+        <button class="link-btn" onclick="showLogin()">← Back to sign in</button>
+      </div>
+    </div>
 
     <div class="login-error" id="login-error"></div>
+    <div class="login-success" id="login-success"></div>
     <div class="login-footer">
       Your data is stored privately per account.<br/>
       We never share your credentials with anyone.
@@ -466,7 +548,9 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 <!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, signInWithPopup, GoogleAuthProvider, GithubAuthProvider, signOut as fbSignOut, onAuthStateChanged }
+import { getAuth, signInWithPopup, GoogleAuthProvider, GithubAuthProvider,
+  signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile,
+  sendPasswordResetEmail, signOut as fbSignOut, onAuthStateChanged }
   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 import { getFirestore, doc, setDoc, getDoc }
   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
@@ -512,10 +596,159 @@ window.signIn = async (type) => {
   }
 };
 
+/* ── Email auth helpers (exposed to window) ── */
+window.showLogin = () => {
+  document.getElementById('email-login-section').style.display='block';
+  document.getElementById('email-register-section').style.display='none';
+  document.getElementById('forgot-section').style.display='none';
+  document.getElementById('login-sub').textContent='Sign in to access your personal dashboard.';
+  hideAuthMsgs();
+};
+window.showRegister = () => {
+  document.getElementById('email-login-section').style.display='none';
+  document.getElementById('email-register-section').style.display='block';
+  document.getElementById('forgot-section').style.display='none';
+  document.getElementById('login-sub').textContent='Create your free account — no Google or GitHub needed.';
+  hideAuthMsgs();
+};
+window.showForgot = () => {
+  document.getElementById('email-login-section').style.display='none';
+  document.getElementById('email-register-section').style.display='none';
+  document.getElementById('forgot-section').style.display='block';
+  document.getElementById('login-sub').textContent='Reset your password.';
+  hideAuthMsgs();
+};
+function hideAuthMsgs(){
+  const e=document.getElementById('login-error'),s=document.getElementById('login-success');
+  if(e){e.style.display='none';e.textContent=''}
+  if(s){s.style.display='none';s.textContent=''}
+}
+function showAuthErr(msg){
+  const e=document.getElementById('login-error');
+  if(e){e.textContent=msg;e.style.display='block'}
+}
+function showAuthSuccess(msg){
+  const s=document.getElementById('login-success');
+  if(s){s.textContent=msg;s.style.display='block'}
+}
+function setLoading(btnId, loading, label){
+  const b=document.getElementById(btnId);
+  if(!b) return;
+  b.disabled=loading;
+  b.innerHTML=loading?'<div class="spinner" style="width:16px;height:16px;margin:0 auto"></div>':label;
+}
+window.toggleEye = (inputId, iconId) => {
+  const inp=document.getElementById(inputId), ic=document.getElementById(iconId);
+  if(!inp||!ic) return;
+  inp.type=inp.type==='password'?'text':'password';
+  ic.className='ti ti-eye'+(inp.type==='text'?'-off':'');
+};
+window.emailSignIn = async () => {
+  const email=document.getElementById('login-email').value.trim();
+  const pwd=document.getElementById('login-pwd').value;
+  if(!email||!pwd){showAuthErr('Please enter your email and password.');return}
+  hideAuthMsgs();
+  setLoading('btn-email-li', true, '');
+  try {
+    await signInWithEmailAndPassword(auth, email, pwd);
+  } catch(e) {
+    const msgs={'auth/user-not-found':'No account found with this email.','auth/wrong-password':'Incorrect password. Try again.','auth/invalid-email':'Please enter a valid email address.','auth/too-many-requests':'Too many attempts. Please try again later.','auth/invalid-credential':'Incorrect email or password.'};
+    showAuthErr(msgs[e.code]||'Sign in failed: '+e.message);
+    setLoading('btn-email-li', false, '<i class="ti ti-login"></i> Sign in');
+  }
+};
+window.emailRegister = async () => {
+  const name=document.getElementById('reg-name').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
+  const pwd=document.getElementById('reg-pwd').value;
+  const pwd2=document.getElementById('reg-pwd2').value;
+  if(!name){showAuthErr('Please enter your name.');return}
+  if(!email){showAuthErr('Please enter your email.');return}
+  if(pwd.length<6){showAuthErr('Password must be at least 6 characters.');return}
+  if(pwd!==pwd2){showAuthErr('Passwords do not match.');return}
+  hideAuthMsgs();
+  setLoading('btn-email-reg', true, '');
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, pwd);
+    await updateProfile(cred.user, {displayName: name});
+  } catch(e) {
+    const msgs={'auth/email-already-in-use':'An account already exists with this email.','auth/invalid-email':'Please enter a valid email address.','auth/weak-password':'Password is too weak — use at least 6 characters.'};
+    showAuthErr(msgs[e.code]||'Registration failed: '+e.message);
+    setLoading('btn-email-reg', false, '<i class="ti ti-user-plus"></i> Create account');
+  }
+};
+window.sendReset = async () => {
+  const email=document.getElementById('forgot-email').value.trim();
+  if(!email){showAuthErr('Please enter your email address.');return}
+  hideAuthMsgs();
+  setLoading('btn-forgot', true, '');
+  try {
+    await sendPasswordResetEmail(auth, email);
+    showAuthSuccess('Reset link sent! Check your inbox (and spam folder).');
+    setLoading('btn-forgot', false, '<i class="ti ti-send"></i> Send reset link');
+  } catch(e) {
+    const msgs={'auth/user-not-found':'No account found with this email.','auth/invalid-email':'Please enter a valid email address.'};
+    showAuthErr(msgs[e.code]||'Failed to send reset email.');
+    setLoading('btn-forgot', false, '<i class="ti ti-send"></i> Send reset link');
+  }
+};
+
 window.signOut = async () => {
   document.getElementById('user-dropdown').classList.remove('open');
-  await fbSignOut(auth);
+  try {
+    await fbSignOut(auth);
+  } catch(e) {
+    console.error('Sign out error:', e);
+  }
 };
+
+/* ── Reset login screen to clean state ── */
+function resetLoginScreen() {
+  // Show login screen, hide app
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app-screen').style.display   = 'none';
+
+  // Reset all OAuth buttons in case they were in loading state
+  const gBtn = document.getElementById('btn-google');
+  const ghBtn = document.getElementById('btn-github');
+  if(gBtn){ gBtn.disabled=false; gBtn.innerHTML='<img src="https://www.google.com/favicon.ico" alt="Google"/><span>Continue with Google</span><i class="ti ti-arrow-right arrow"></i>'; }
+  if(ghBtn){ ghBtn.disabled=false; ghBtn.innerHTML='<i class="ti ti-brand-github" style="font-size:20px;width:20px;height:20px"></i><span>Continue with GitHub</span><i class="ti ti-arrow-right arrow"></i>'; }
+
+  // Reset email login button
+  const liBtn = document.getElementById('btn-email-li');
+  if(liBtn){ liBtn.disabled=false; liBtn.innerHTML='<i class="ti ti-login"></i> Sign in'; }
+
+  // Reset register button
+  const regBtn = document.getElementById('btn-email-reg');
+  if(regBtn){ regBtn.disabled=false; regBtn.innerHTML='<i class="ti ti-user-plus"></i> Create account'; }
+
+  // Reset forgot button
+  const fgBtn = document.getElementById('btn-forgot');
+  if(fgBtn){ fgBtn.disabled=false; fgBtn.innerHTML='<i class="ti ti-send"></i> Send reset link'; }
+
+  // Clear all input fields
+  ['login-email','login-pwd','reg-name','reg-email','reg-pwd','reg-pwd2','forgot-email']
+    .forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+
+  // Hide error/success messages
+  const err=document.getElementById('login-error'), suc=document.getElementById('login-success');
+  if(err){ err.style.display='none'; err.textContent=''; }
+  if(suc){ suc.style.display='none'; suc.textContent=''; }
+
+  // Show default sign-in view
+  const eli=document.getElementById('email-login-section');
+  const erg=document.getElementById('email-register-section');
+  const efg=document.getElementById('forgot-section');
+  if(eli) eli.style.display='block';
+  if(erg) erg.style.display='none';
+  if(efg) efg.style.display='none';
+
+  const sub=document.getElementById('login-sub');
+  if(sub) sub.textContent='Sign in to access your personal link cards, tasks, and credentials vault.';
+
+  // Clear in-memory data
+  window._cards=[]; window._todos=[]; window._creds=[]; window._cats=[];
+}
 
 /* ── Auth state ── */
 onAuthStateChanged(auth, async (user) => {
@@ -523,25 +756,36 @@ onAuthStateChanged(auth, async (user) => {
     currentUser = user;
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app-screen').style.display   = 'block';
-    // populate user pill
+
+    // Populate user pill
     const name = user.displayName || user.email || 'User';
     document.getElementById('user-name').textContent = name;
     document.getElementById('ud-name').textContent   = name;
     document.getElementById('ud-email').textContent  = user.email || '';
-    const fallback = document.getElementById('user-avatar-fallback');
-    if (user.photoURL) {
-      const img = document.createElement('img');
-      img.src = user.photoURL; img.alt = name; img.className = 'user-avatar';
-      fallback.replaceWith(img);
-    } else {
-      fallback.textContent = name.charAt(0).toUpperCase();
+
+    // Avatar — always reset to fallback first to avoid stale img from prev session
+    const pillEl = document.getElementById('user-pill');
+    let avatarEl = pillEl ? pillEl.querySelector('.user-avatar, .user-avatar-fallback') : null;
+    if(avatarEl && avatarEl.tagName === 'IMG') {
+      const fb = document.createElement('div');
+      fb.id='user-avatar-fallback'; fb.className='user-avatar-fallback';
+      fb.textContent=name.charAt(0).toUpperCase();
+      avatarEl.replaceWith(fb);
+      avatarEl=fb;
     }
+    if(user.photoURL && avatarEl) {
+      const img = document.createElement('img');
+      img.src=user.photoURL; img.alt=name; img.className='user-avatar';
+      avatarEl.replaceWith(img);
+    } else if(avatarEl) {
+      avatarEl.textContent=name.charAt(0).toUpperCase();
+    }
+
     await loadUserData(user.uid);
     window.initApp();
   } else {
     currentUser = null;
-    document.getElementById('login-screen').style.display = 'flex';
-    document.getElementById('app-screen').style.display   = 'none';
+    resetLoginScreen();
   }
 });
 
