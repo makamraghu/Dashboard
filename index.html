@@ -471,6 +471,9 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
           <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;color:var(--tx)">
             <input type="checkbox" id="lw-pin" style="width:auto;accent-color:var(--tx-warning)"/> Pin to top
           </label>
+          <label class="admin-only" style="display:none;align-items:center;gap:6px;font-size:13px;cursor:pointer;color:var(--tx)">
+            <input type="checkbox" id="lw-default" style="width:auto;accent-color:var(--tx-purple)"/> Default for everyone
+          </label>
         </div>
         <div class="err" id="lw-err"></div>
         <button class="btn btn-primary" onclick="addCard()" style="width:100%;justify-content:center"><i class="ti ti-plus" aria-hidden="true"></i> Add card</button>
@@ -573,6 +576,10 @@ const firebaseConfig = {
   measurementId:     "G-X704F7JKJR"
 };
 // ─────────────────────────────────────
+
+// ── ADMINS: these accounts can choose the default links for everyone ──
+// Use the same email(s) in your Firestore rules (see config/defaults rule).
+const ADMIN_EMAILS = ['your-email@example.com'];
 
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -755,6 +762,7 @@ function resetLoginScreen() {
 
   // Clear in-memory data
   window._cards=[]; window._todos=[]; window._creds=[]; window._cats=[];
+  window._defaults=[]; window.isAdmin=false;
 }
 
 /* ── Auth state ── */
@@ -788,7 +796,9 @@ onAuthStateChanged(auth, async (user) => {
       avatarEl.textContent=name.charAt(0).toUpperCase();
     }
 
-    await loadUserData(user.uid);
+    window.isAdmin = !!user.email && user.emailVerified &&
+      ADMIN_EMAILS.map(e=>e.toLowerCase()).includes(user.email.toLowerCase());
+    await Promise.all([loadUserData(user.uid), loadDefaults()]);
     window.initApp();
   } else {
     currentUser = null;
@@ -817,6 +827,29 @@ async function loadUserData(uid) {
   }
 }
 
+/* ── Shared default links (config/defaults) ── */
+async function loadDefaults() {
+  try {
+    const snap = await getDoc(doc(db, 'config', 'defaults'));
+    window._defaults = snap.exists() && Array.isArray(snap.data().links) ? snap.data().links : [];
+  } catch(e) {
+    console.error('Failed to load default links:', e);
+    window._defaults = [];
+  }
+}
+
+window.saveDefaults = async (links) => {
+  if (!window.isAdmin) return false;
+  try {
+    await setDoc(doc(db, 'config', 'defaults'), { links, updated: new Date().toISOString() });
+    return true;
+  } catch(e) {
+    console.error('Failed to save default links:', e);
+    alert('⚠️ Could not save default links. Check the config/defaults rule in Firestore.');
+    return false;
+  }
+};
+
 window.saveUserData = async () => {
   if (!currentUser) return;
   try {
@@ -844,16 +877,11 @@ document.addEventListener('click', (e) => {
 
 <script>
 /* ══ DEFAULT LINKS ══
-   Shown to EVERY signed-in user, above their own cards.
-   Users can open/copy them but cannot delete, move or edit them.
-   Edit this list and redeploy — everyone sees the change on next load.
-   icon = any Tabler icon name (see ICONS list below, or tabler.io/icons) */
-const DEFAULT_LINKS = [
-  { name: 'ServiceNow Docs', url: 'https://docs.servicenow.com',     icon: 'book' },
-  { name: 'GitHub',          url: 'https://github.com',              icon: 'brand-github' },
-  { name: 'Gmail',           url: 'https://mail.google.com',         icon: 'mail' },
-  { name: 'Google Calendar', url: 'https://calendar.google.com',     icon: 'calendar' }
-];
+   Shown to EVERY signed-in user, above their own cards (read-only for them).
+   Stored in Firestore at config/defaults. Admins (ADMIN_EMAILS) choose them
+   from inside the dashboard: the globe button on a card, or the
+   "Default for everyone" checkbox when adding a card. */
+var defaultLinks = [];
 
 /* ── App state (declared first to avoid hoisting issues) ── */
 var cards=[], todos=[], creds=[], todoFilter='all', selectedIcon='link';
@@ -864,6 +892,8 @@ window.initApp = function() {
   todos      = window._todos ? JSON.parse(JSON.stringify(window._todos)) : [];
   creds      = window._creds ? JSON.parse(JSON.stringify(window._creds)) : [];
   categories = window._cats  ? JSON.parse(JSON.stringify(window._cats))  : [];
+  defaultLinks = window._defaults ? JSON.parse(JSON.stringify(window._defaults)) : [];
+  document.querySelectorAll('.admin-only').forEach(el=>el.style.display=window.isAdmin?'flex':'none');
   renderCatChips();
   renderCatSelect();
   renderCards(); renderTodos(); renderCreds(); setFilter('all'); updateStats();
@@ -1055,8 +1085,16 @@ function addCard(){
   if(!raw){showErr('lw-err','Enter a URL.');return}
   const url=raw.startsWith('http')?raw:'https://'+raw;
   if(!isUrl(url)){showErr('lw-err','Enter a valid URL.');return}
-  cards.push({id:Date.now(),name,url,icon:selectedIcon,pin,cat});
-  persist();
+  const asDefault=window.isAdmin&&document.getElementById('lw-default')?.checked;
+  if(asDefault){
+    if(defaultLinks.some(d=>d.url===url)){showErr('lw-err','That URL is already a default link.');return}
+    defaultLinks.push({id:Date.now(),name,url,icon:selectedIcon});
+    window.saveDefaults(defaultLinks);
+    document.getElementById('lw-default').checked=false;
+  } else {
+    cards.push({id:Date.now(),name,url,icon:selectedIcon,pin,cat});
+    persist();
+  }
   document.getElementById('lw-name').value='';
   document.getElementById('lw-url').value='';
   document.getElementById('lw-pin').checked=false;
@@ -1090,6 +1128,7 @@ function makeCardEl(c){
       <button class="btn btn-icon btn-sm" title="Open" onclick="window.open('${esc(c.url)}','_blank');event.stopPropagation()"><i class="ti ti-external-link" aria-hidden="true"></i></button>
       <button class="btn btn-icon btn-sm" id="${cpId}" title="Copy URL" onclick="copyCardUrl('${esc(c.url)}','${cpId}');event.stopPropagation()"><i class="ti ti-copy" aria-hidden="true"></i></button>
       <button class="btn btn-icon btn-sm" title="${c.pin?'Unpin':'Pin'}" onclick="togglePin(${c.id});event.stopPropagation()"><i class="ti ti-${c.pin?'star-off':'star'}" aria-hidden="true"></i></button>
+      ${window.isAdmin?`<button class="btn btn-icon btn-sm" title="Make default for everyone" onclick="makeDefault(${c.id});event.stopPropagation()"><i class="ti ti-world-upload" aria-hidden="true"></i></button>`:''}
       <button class="btn btn-icon btn-sm btn-danger" title="Remove" onclick="confirmRemoveCard(${c.id});event.stopPropagation()"><i class="ti ti-trash" aria-hidden="true"></i></button>
     </div>
     <div class="card-confirm" id="conf-${c.id}" onclick="event.stopPropagation()">
@@ -1101,6 +1140,30 @@ function makeCardEl(c){
     </div>`;
   div.addEventListener('click',()=>window.open(c.url,'_blank'));
   return div;
+}
+
+/* Admin: move one of your own cards into the shared default list */
+async function makeDefault(id){
+  if(!window.isAdmin) return;
+  const c=cards.find(x=>x.id===id); if(!c) return;
+  if(defaultLinks.some(d=>d.url===c.url)){alert('That URL is already a default link.');return}
+  defaultLinks.push({id:Date.now(),name:c.name,url:c.url,icon:c.icon});
+  const ok=await window.saveDefaults(defaultLinks);
+  if(!ok){defaultLinks.pop();return}
+  cards=cards.filter(x=>x.id!==id); persist();
+  renderCards(); updateStats();
+}
+/* Admin: take a link out of the default list (it moves back to your own cards) */
+async function removeDefault(idx){
+  if(!window.isAdmin) return;
+  const d=defaultLinks[idx]; if(!d) return;
+  if(!confirm(`Remove "${d.name}" from everyone's default links?\nIt will move back to your own cards.`)) return;
+  const prev=defaultLinks.slice();
+  defaultLinks.splice(idx,1);
+  const ok=await window.saveDefaults(defaultLinks);
+  if(!ok){defaultLinks=prev;return}
+  cards.push({id:Date.now(),name:d.name,url:d.url,icon:d.icon||'link',pin:false,cat:''}); persist();
+  renderCards(); updateStats();
 }
 
 function makeDefaultCardEl(c, i){
@@ -1118,7 +1181,10 @@ function makeDefaultCardEl(c, i){
     <div class="card-actions">
       <button class="btn btn-icon btn-sm" data-act="open" title="Open"><i class="ti ti-external-link" aria-hidden="true"></i></button>
       <button class="btn btn-icon btn-sm" data-act="copy" id="${cpId}" title="Copy URL"><i class="ti ti-copy" aria-hidden="true"></i></button>
+      ${window.isAdmin?`<button class="btn btn-icon btn-sm btn-danger" data-act="undefault" title="Remove from defaults"><i class="ti ti-world-off" aria-hidden="true"></i></button>`:''}
     </div>`;
+  const ud=div.querySelector('[data-act="undefault"]');
+  if(ud) ud.addEventListener('click',e=>{e.stopPropagation();removeDefault(i)});
   div.querySelector('[data-act="open"]').addEventListener('click',e=>{e.stopPropagation();window.open(c.url,'_blank')});
   div.querySelector('[data-act="copy"]').addEventListener('click',e=>{e.stopPropagation();copyCardUrl(c.url,cpId)});
   div.addEventListener('click',()=>window.open(c.url,'_blank'));
@@ -1129,9 +1195,9 @@ function renderDefaultCards(q){
   const grid=document.getElementById('default-grid');
   const label=document.getElementById('default-label');
   if(!grid) return 0;
-  const list=q?DEFAULT_LINKS.filter(c=>c.name.toLowerCase().includes(q)||c.url.toLowerCase().includes(q)):DEFAULT_LINKS;
+  const list=defaultLinks.map((c,i)=>({c,i})).filter(({c})=>!q||c.name.toLowerCase().includes(q)||c.url.toLowerCase().includes(q));
   grid.innerHTML='';
-  list.forEach((c,i)=>grid.appendChild(makeDefaultCardEl(c,i)));
+  list.forEach(({c,i})=>grid.appendChild(makeDefaultCardEl(c,i)));
   grid.style.display=list.length?'grid':'none';
   label.style.display=list.length?'flex':'none';
   return list.length;
