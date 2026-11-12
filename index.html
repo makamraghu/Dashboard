@@ -134,7 +134,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .panel-title{font-size:11px;font-weight:600;color:var(--tx2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem;display:flex;align-items:center;gap:6px}
 .panel-title i{font-size:14px}
 
-input[type=text],input[type=password],input[type=date],textarea,select{
+input[type=text],input[type=url],input[type=password],input[type=date],textarea,select{
   font-family:inherit;font-size:13px;color:var(--tx);background:var(--bg);border:.5px solid var(--bd);border-radius:var(--rm);padding:7px 10px;width:100%;outline:none;transition:border-color .15s,box-shadow .15s;
 }
 input:focus,textarea:focus,select:focus{border-color:var(--tx-info);box-shadow:0 0 0 3px rgba(24,95,165,.1)}
@@ -450,7 +450,12 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
       <div class="form-body" id="card-body">
         <div style="display:flex;gap:8px;margin-top:4px;margin-bottom:8px">
           <div class="field" style="flex:1;margin-bottom:0"><label for="lw-name">Name</label><input type="text" id="lw-name" placeholder="ServiceNow Docs"/></div>
-          <div class="field" style="flex:1.6;margin-bottom:0"><label for="lw-url">URL</label><input type="text" id="lw-url" placeholder="https://docs.servicenow.com"/></div>
+          <div class="field" style="flex:1.6;margin-bottom:0"><label for="lw-url">URL</label>
+            <div style="display:flex;gap:6px">
+              <input type="url" id="lw-url" inputmode="url" autocomplete="off" placeholder="https://docs.servicenow.com" style="flex:1"/>
+              <button type="button" class="btn btn-icon" id="lw-paste" onclick="pasteUrl()" title="Paste from clipboard"><i class="ti ti-clipboard" aria-hidden="true"></i></button>
+            </div>
+          </div>
         </div>
         <div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:8px">
           <div class="field" style="flex:1;margin-bottom:0">
@@ -579,7 +584,7 @@ const firebaseConfig = {
 
 // ── ADMINS: these accounts can choose the default links for everyone ──
 // Use the same email(s) in your Firestore rules (see config/defaults rule).
-const ADMIN_EMAILS = ['raghu6909@gmail.com'];
+const ADMIN_EMAILS = ['your-email@example.com'];
 
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -1101,6 +1106,22 @@ function addCard(){
   document.getElementById('icon-picker').style.display='none';
   if(document.getElementById('lw-cat')) document.getElementById('lw-cat').value='';
   renderCards();updateStats();
+}
+
+/* Paste button for the URL field — reads the clipboard directly */
+async function pasteUrl(){
+  const inp=document.getElementById('lw-url');
+  try{
+    if(!navigator.clipboard||!navigator.clipboard.readText) throw new Error('unsupported');
+    const txt=(await navigator.clipboard.readText()).trim();
+    if(!txt){showErr('lw-err','Clipboard is empty — copy a link first.');return}
+    inp.value=txt; inp.focus();
+    const b=document.getElementById('lw-paste');
+    if(b){const o=b.innerHTML;b.innerHTML='<i class="ti ti-check" aria-hidden="true"></i>';setTimeout(()=>b.innerHTML=o,1200)}
+  }catch(e){
+    inp.focus();
+    showErr('lw-err','Browser blocked clipboard access. Allow clipboard permission for this site, or press Ctrl+V / ⌘V in the URL box.');
+  }
 }
 
 function removeCard(id){cards=cards.filter(c=>c.id!==id);persist();renderCards();updateStats()}
