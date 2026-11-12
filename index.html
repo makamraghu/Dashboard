@@ -172,6 +172,9 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 .link-card:hover{background:var(--bg2);border-color:var(--bd2);box-shadow:0 3px 10px rgba(0,0,0,.1)}
 .link-card.pinned{border-color:var(--tx-warning);border-width:1.5px}
 .pin-badge{position:absolute;top:6px;right:6px;font-size:11px;color:var(--tx-warning)}
+.link-card.default-card{border-color:var(--bd-info);border-width:1px}
+.default-badge{position:absolute;top:6px;right:6px;font-size:11px;color:var(--tx-info)}
+.card-icon.default-icon{background:var(--bg-purple);color:var(--tx-purple)}
 .card-icon{width:40px;height:40px;border-radius:var(--rm);background:var(--bg-info);display:flex;align-items:center;justify-content:center;color:var(--tx-info);font-size:20px;pointer-events:none}
 .card-icon.pinned-icon{background:var(--bg-warning);color:var(--tx-warning)}
 .card-name{font-size:12px;font-weight:500;color:var(--tx);text-align:center;word-break:break-word;line-height:1.3}
@@ -486,6 +489,10 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 
     <!-- Search -->
     <div class="search-wrap"><i class="ti ti-search" aria-hidden="true"></i><input type="text" id="card-search" placeholder="Search link cards…" oninput="renderCards()"/></div>
+
+    <!-- Default links (shown to every user, read-only) -->
+    <div class="section-divider" id="default-label" style="display:none"><i class="ti ti-world" style="color:var(--tx-info)" aria-hidden="true"></i> Default links</div>
+    <div class="link-grid" id="default-grid"></div>
 
     <!-- Pinned section -->
     <div class="section-divider" id="pinned-label" style="display:none"><i class="ti ti-star" style="color:var(--tx-warning)" aria-hidden="true"></i> Pinned</div>
@@ -836,6 +843,18 @@ document.addEventListener('click', (e) => {
 </script>
 
 <script>
+/* ══ DEFAULT LINKS ══
+   Shown to EVERY signed-in user, above their own cards.
+   Users can open/copy them but cannot delete, move or edit them.
+   Edit this list and redeploy — everyone sees the change on next load.
+   icon = any Tabler icon name (see ICONS list below, or tabler.io/icons) */
+const DEFAULT_LINKS = [
+  { name: 'ServiceNow Docs', url: 'https://docs.servicenow.com',     icon: 'book' },
+  { name: 'GitHub',          url: 'https://github.com',              icon: 'brand-github' },
+  { name: 'Gmail',           url: 'https://mail.google.com',         icon: 'mail' },
+  { name: 'Google Calendar', url: 'https://calendar.google.com',     icon: 'calendar' }
+];
+
 /* ── App state (declared first to avoid hoisting issues) ── */
 var cards=[], todos=[], creds=[], todoFilter='all', selectedIcon='link';
 
@@ -1084,6 +1103,40 @@ function makeCardEl(c){
   return div;
 }
 
+function makeDefaultCardEl(c, i){
+  const div=document.createElement('div');
+  div.className='link-card default-card';
+  div.setAttribute('role','group');
+  div.setAttribute('aria-label',c.name);
+  div.title='Default link — available to everyone';
+  const cpId='dcp-'+i;
+  div.innerHTML=`
+    <span class="default-badge"><i class="ti ti-lock" aria-hidden="true"></i></span>
+    <div class="card-icon default-icon"><i class="ti ti-${esc(c.icon||'link')}" aria-hidden="true"></i></div>
+    <div class="card-name">${esc(c.name)}</div>
+    <div class="card-url">${esc(c.url)}</div>
+    <div class="card-actions">
+      <button class="btn btn-icon btn-sm" data-act="open" title="Open"><i class="ti ti-external-link" aria-hidden="true"></i></button>
+      <button class="btn btn-icon btn-sm" data-act="copy" id="${cpId}" title="Copy URL"><i class="ti ti-copy" aria-hidden="true"></i></button>
+    </div>`;
+  div.querySelector('[data-act="open"]').addEventListener('click',e=>{e.stopPropagation();window.open(c.url,'_blank')});
+  div.querySelector('[data-act="copy"]').addEventListener('click',e=>{e.stopPropagation();copyCardUrl(c.url,cpId)});
+  div.addEventListener('click',()=>window.open(c.url,'_blank'));
+  return div;
+}
+
+function renderDefaultCards(q){
+  const grid=document.getElementById('default-grid');
+  const label=document.getElementById('default-label');
+  if(!grid) return 0;
+  const list=q?DEFAULT_LINKS.filter(c=>c.name.toLowerCase().includes(q)||c.url.toLowerCase().includes(q)):DEFAULT_LINKS;
+  grid.innerHTML='';
+  list.forEach((c,i)=>grid.appendChild(makeDefaultCardEl(c,i)));
+  grid.style.display=list.length?'grid':'none';
+  label.style.display=list.length?'flex':'none';
+  return list.length;
+}
+
 function makeDropZone(catId){
   const zone = document.createElement('div');
   zone.className='cat-drop-zone';
@@ -1098,6 +1151,7 @@ function makeDropZone(catId){
 function renderCards(){
   const q=(document.getElementById('card-search')?.value||'').toLowerCase().trim();
   const filtered=q?cards.filter(c=>c.name.toLowerCase().includes(q)||c.url.toLowerCase().includes(q)):cards;
+  const defaultShown=renderDefaultCards(q);
 
   // Pinned section
   const pinned=filtered.filter(c=>c.pin);
@@ -1144,8 +1198,8 @@ function renderCards(){
     });
   }
 
-  document.getElementById('card-empty').style.display=cards.length===0?'flex':'none';
-  document.getElementById('card-no-results').style.display=(cards.length>0&&filtered.length===0)?'flex':'none';
+  document.getElementById('card-empty').style.display=(!q&&cards.length===0)?'flex':'none';
+  document.getElementById('card-no-results').style.display=(q&&filtered.length===0&&defaultShown===0)?'flex':'none';
 }
 
 function addTodo(){
