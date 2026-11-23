@@ -70,8 +70,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 
 /* ── MOBILE RESPONSIVE ── */
 @media(max-width:768px){
-  .app{grid-template-columns:1fr;grid-template-rows:auto auto 1fr}
-  .topbar{gap:6px;padding:0 .75rem;height:48px}
+  .app{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto 1fr}
+  .app>*{min-width:0}
+  .topbar{gap:6px;padding:0 .75rem;height:48px;overflow-x:auto;scrollbar-width:none}
+  .topbar::-webkit-scrollbar{display:none}
+  .topbar>*{flex-shrink:0}
   .topbar-brand{font-size:13px}
   .topbar-brand i{font-size:17px}
   .stat-chip{font-size:11px;padding:2px 7px;white-space:nowrap}
@@ -261,6 +264,75 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 /* spinner */
 .spinner{width:22px;height:22px;border:2.5px solid var(--bd);border-top-color:var(--tx-info);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── VIEW TABS (Dashboard / Work Log) ── */
+.topbar-brand{margin-right:8px}
+.view-tabs{display:flex;gap:2px;background:var(--bg2);border:.5px solid var(--bd);border-radius:20px;padding:2px;margin-right:auto}
+.vt-btn{font-family:inherit;font-size:12px;font-weight:500;color:var(--tx2);background:none;border:none;border-radius:20px;padding:4px 12px;cursor:pointer;display:flex;align-items:center;gap:5px;transition:background .12s,color .12s}
+.vt-btn i{font-size:14px}
+.vt-btn:hover{color:var(--tx)}
+.vt-btn.active{background:var(--bg);color:var(--tx-info);box-shadow:var(--shadow)}
+.app .panel-worklog{display:none !important}
+.app.view-worklog .panel-worklog{display:block !important}
+.app.view-worklog .panel-left,.app.view-worklog .panel-center,.app.view-worklog .panel-right{display:none !important}
+.panel-worklog{grid-column:1/-1;background:var(--bg3);min-width:0}
+
+/* ── WORK LOG ── */
+input[type=number]{font-family:inherit;font-size:13px;color:var(--tx);background:var(--bg);border:.5px solid var(--bd);border-radius:var(--rm);padding:7px 10px;width:100%;outline:none}
+.wl-layout{display:grid;grid-template-columns:370px minmax(0,1fr);gap:1rem;align-items:start}
+.wl-layout>*{min-width:0}
+.wl-form{position:sticky;top:0;margin-bottom:0}
+.wl-row{display:flex;gap:8px}
+.wl-row .field{flex:1;min-width:0}
+.wl-script{border-left:3px solid var(--tx-purple);background:var(--bg2);border-radius:var(--rm);padding:8px 10px 2px;margin-bottom:8px}
+.wl-script-title{font-size:11px;font-weight:600;color:var(--tx-purple);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.wl-toolbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:.6rem}
+.wl-datenav{display:flex;gap:4px;align-items:center}
+.wl-datenav input{width:auto;padding:5px 8px;font-size:12px}
+.wl-toolbar .search-wrap{flex:1;min-width:180px;margin-bottom:0}
+.wl-summary{font-size:12px;color:var(--tx2);margin-bottom:.5rem;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center}
+.wl-summary b{color:var(--tx);font-weight:600}
+.wl-summary .btn{margin-left:auto}
+.wl-item{background:var(--bg);border:.5px solid var(--bd);border-left:3px solid var(--bd2);border-radius:var(--rl);padding:10px 12px;margin-bottom:6px;box-shadow:var(--shadow)}
+.wl-item.t-story{border-left-color:var(--tx-info)}
+.wl-item.t-defect{border-left-color:var(--tx-danger)}
+.wl-item.t-automation{border-left-color:var(--tx-purple)}
+.wl-item.t-task{border-left-color:var(--tx2)}
+.wl-item.editing{box-shadow:0 0 0 2px var(--tx-info)}
+.wl-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.wl-type{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;text-transform:uppercase;letter-spacing:.03em;white-space:nowrap}
+.wl-type i{font-size:12px}
+.wt-story{background:var(--bg-info);color:var(--tx-info)}
+.wt-defect{background:var(--bg-danger);color:var(--tx-danger)}
+.wt-automation{background:var(--bg-purple);color:var(--tx-purple)}
+.wt-task{background:var(--bg2);color:var(--tx2)}
+.wl-ref{font-size:12px;font-weight:600;color:var(--tx);font-family:ui-monospace,Menlo,Consolas,monospace}
+a.wl-ref{color:var(--tx-info);text-decoration:none}
+a.wl-ref:hover{text-decoration:underline}
+.wl-hours{font-size:11px;color:var(--tx3);display:flex;align-items:center;gap:3px}
+.wl-title{font-size:13px;color:var(--tx);margin-top:5px;font-weight:500;word-break:break-word}
+.wl-notes{font-size:12px;color:var(--tx2);margin-top:4px;white-space:pre-wrap;word-break:break-word;line-height:1.45}
+.wl-scr{margin-top:6px;font-size:12px;background:var(--bg2);border-radius:var(--rm);padding:6px 8px;display:flex;flex-wrap:wrap;gap:4px 14px;color:var(--tx2);align-items:center}
+.wl-scr b{color:var(--tx);font-weight:500;word-break:break-all}
+.wl-scr i{color:var(--tx-purple)}
+.wl-actions{margin-left:auto;display:flex;gap:3px}
+.wl-actions .btn{width:26px;height:26px;padding:0;justify-content:center}
+.s-notstarted{background:var(--bg2);color:var(--tx2)}
+.s-blocked{background:var(--bg-danger);color:var(--tx-danger)}
+.r-pass{color:var(--tx-success);font-weight:600}
+.r-fail{color:var(--tx-danger);font-weight:600}
+.r-partial{color:var(--tx-warning);font-weight:600}
+.r-notrun{color:var(--tx3)}
+@media(max-width:1000px){
+  .wl-layout{grid-template-columns:minmax(0,1fr)}
+  .wl-form{position:static}
+}
+@media(max-width:768px){
+  .view-tabs{display:none}
+  .topbar-brand{margin-right:auto}
+  .wl-row{flex-wrap:wrap}
+  .wl-row .field{flex:1 1 120px !important}
+}
 </style>
 </head>
 <body>
@@ -365,6 +437,10 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 
   <header class="topbar">
     <div class="topbar-brand"><i class="ti ti-layout-dashboard" aria-hidden="true"></i> My Dashboard</div>
+    <div class="view-tabs" role="tablist">
+      <button class="vt-btn active" id="vt-dash" onclick="setView('dash')"><i class="ti ti-layout-grid" aria-hidden="true"></i> Dashboard</button>
+      <button class="vt-btn" id="vt-work" onclick="setView('work')"><i class="ti ti-notebook" aria-hidden="true"></i> Work log</button>
+    </div>
     <div class="stat-chip"><i class="ti ti-link" aria-hidden="true"></i> <b id="s-links">0</b> links</div>
     <div class="stat-chip"><i class="ti ti-checkbox" aria-hidden="true"></i> <b id="s-tasks">0</b> tasks</div>
     <div class="stat-chip"><i class="ti ti-alert-triangle" style="color:var(--tx-danger)" aria-hidden="true"></i> <b id="s-overdue" style="color:var(--tx-danger)">0</b> overdue</div>
@@ -544,6 +620,103 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
     <div class="empty-state" id="cred-no-results" style="display:none"><i class="ti ti-search-off" aria-hidden="true"></i><p>No credentials match your search.</p></div>
   </aside>
 
+  <!-- WORK LOG (full-width tab) -->
+  <section class="panel panel-worklog" id="worklog-panel">
+    <div class="panel-title"><i class="ti ti-notebook" aria-hidden="true"></i> Work log — daily tasks, stories, defects &amp; automation</div>
+    <div class="wl-layout">
+
+      <!-- Add / edit entry -->
+      <div class="form-box wl-form">
+        <button class="form-toggle open" id="wl-toggle" onclick="toggleForm('wl')">
+          <span style="display:flex;align-items:center;gap:6px"><i class="ti ti-plus-circle" aria-hidden="true" id="wl-form-icon"></i> <span id="wl-form-title">Add work entry</span></span>
+          <i class="ti ti-chevron-down chevron" aria-hidden="true"></i>
+        </button>
+        <div class="form-body open" id="wl-body">
+          <div class="wl-row" style="margin-top:4px">
+            <div class="field"><label for="wl-date">Date</label><input type="date" id="wl-date"/></div>
+            <div class="field"><label for="wl-type">Type</label>
+              <select id="wl-type" onchange="wlTypeChanged()">
+                <option value="story">Story</option>
+                <option value="defect">Defect</option>
+                <option value="automation">Automation script</option>
+                <option value="task">Task / other</option>
+              </select>
+            </div>
+          </div>
+          <div class="wl-row">
+            <div class="field"><label for="wl-ref">ID / number</label><input type="text" id="wl-ref" placeholder="STRY0012345"/></div>
+            <div class="field"><label for="wl-status">Status</label>
+              <select id="wl-status">
+                <option value="notstarted">Not started</option>
+                <option value="inprogress" selected>In progress</option>
+                <option value="blocked">Blocked</option>
+                <option value="done">Done</option>
+              </select>
+            </div>
+          </div>
+          <div class="field"><label for="wl-title">Title / what I worked on</label><input type="text" id="wl-title" placeholder="e.g. Quote approval flow – regression"/></div>
+          <div class="wl-row">
+            <div class="field"><label for="wl-hours">Hours</label><input type="number" id="wl-hours" min="0" max="24" step="0.25" placeholder="2"/></div>
+            <div class="field" style="flex:2.2"><label for="wl-link">Link (optional)</label><input type="url" id="wl-link" placeholder="https://…service-now.com/…"/></div>
+          </div>
+
+          <div class="wl-script" id="wl-script" style="display:none">
+            <div class="wl-script-title"><i class="ti ti-robot" aria-hidden="true"></i> Automation script details</div>
+            <div class="field"><label for="wl-sname">Script / test name</label><input type="text" id="wl-sname" placeholder="e.g. TC_Quote_Approval_E2E"/></div>
+            <div class="wl-row">
+              <div class="field"><label for="wl-stool">Tool</label>
+                <select id="wl-stool">
+                  <option>ATF</option><option>Playwright</option><option>Selenium</option><option>AccelQ</option>
+                  <option>Postman</option><option>REST Assured</option><option>JMeter</option><option>Other</option>
+                </select>
+              </div>
+              <div class="field"><label for="wl-sresult">Run result</label>
+                <select id="wl-sresult">
+                  <option value="notrun">Not run</option><option value="pass">Pass</option>
+                  <option value="fail">Fail</option><option value="partial">Partial</option>
+                </select>
+              </div>
+              <div class="field" style="flex:.7"><label for="wl-scount">Test cases</label><input type="number" id="wl-scount" min="0" step="1" placeholder="0"/></div>
+            </div>
+            <div class="field"><label for="wl-spath">Repo / path / suite</label><input type="text" id="wl-spath" placeholder="e.g. surf-test/tests/quote/approval.spec.ts"/></div>
+          </div>
+
+          <div class="field"><label for="wl-notes">Notes / progress / blockers</label><textarea id="wl-notes" placeholder="What got done, what's next, any blockers…"></textarea></div>
+          <div class="err" id="wl-err"></div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-primary" onclick="saveWorkEntry()" style="flex:1;justify-content:center"><i class="ti ti-device-floppy" aria-hidden="true"></i> <span id="wl-save-label">Add entry</span></button>
+            <button class="btn" id="wl-cancel" onclick="resetWorkForm()" style="display:none">Cancel</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Entries -->
+      <div>
+        <div class="wl-toolbar">
+          <button class="filter-btn active" id="wlv-day" onclick="setWlView('day')">Day</button>
+          <button class="filter-btn" id="wlv-all" onclick="setWlView('all')">All</button>
+          <div class="wl-datenav" id="wl-datenav">
+            <button class="btn btn-sm btn-icon" onclick="shiftWlDate(-1)" title="Previous day"><i class="ti ti-chevron-left" aria-hidden="true"></i></button>
+            <input type="date" id="wl-viewdate" onchange="wlDate=this.value||todayStr();renderWorklog()"/>
+            <button class="btn btn-sm btn-icon" onclick="shiftWlDate(1)" title="Next day"><i class="ti ti-chevron-right" aria-hidden="true"></i></button>
+            <button class="btn btn-sm" onclick="wlDate=todayStr();renderWorklog()">Today</button>
+          </div>
+          <div class="search-wrap"><i class="ti ti-search" aria-hidden="true"></i><input type="text" id="wl-search" placeholder="Search ID, title, notes, script…" oninput="renderWorklog()"/></div>
+        </div>
+        <div class="todo-filters" style="margin-bottom:.6rem">
+          <button class="filter-btn active" id="wlt-all" onclick="setWlType('all')">All types</button>
+          <button class="filter-btn" id="wlt-story" onclick="setWlType('story')"><i class="ti ti-book-2" style="color:var(--tx-info)" aria-hidden="true"></i> Stories</button>
+          <button class="filter-btn" id="wlt-defect" onclick="setWlType('defect')"><i class="ti ti-bug" style="color:var(--tx-danger)" aria-hidden="true"></i> Defects</button>
+          <button class="filter-btn" id="wlt-automation" onclick="setWlType('automation')"><i class="ti ti-robot" style="color:var(--tx-purple)" aria-hidden="true"></i> Automation</button>
+          <button class="filter-btn" id="wlt-task" onclick="setWlType('task')"><i class="ti ti-checklist" aria-hidden="true"></i> Tasks</button>
+        </div>
+        <div class="wl-summary" id="wl-summary"></div>
+        <div id="wl-list"></div>
+        <div class="empty-state" id="wl-empty" style="display:none"><i class="ti ti-notebook-off" aria-hidden="true"></i><p id="wl-empty-msg">Nothing logged for this day yet.</p></div>
+      </div>
+    </div>
+  </section>
+
   <!-- Mobile bottom nav -->
   <nav class="mobile-nav" id="mobile-nav">
     <button class="mn-btn" id="mn-todo" onclick="switchTab('todo')">
@@ -553,6 +726,10 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
     <button class="mn-btn active" id="mn-links" onclick="switchTab('links')">
       <i class="ti ti-link" aria-hidden="true"></i>
       <span>Links</span>
+    </button>
+    <button class="mn-btn" id="mn-work" onclick="switchTab('work')">
+      <i class="ti ti-notebook" aria-hidden="true"></i>
+      <span>Work log</span>
     </button>
     <button class="mn-btn" id="mn-creds" onclick="switchTab('creds')">
       <i class="ti ti-lock" aria-hidden="true"></i>
@@ -586,7 +763,7 @@ const firebaseConfig = {
 
 // ── ADMINS: these accounts can choose the default links for everyone ──
 // Use the same email(s) in your Firestore rules (see config/defaults rule).
-const ADMIN_EMAILS = ['raghu6909@gmail.com'];
+const ADMIN_EMAILS = ['your-email@example.com'];
 
 const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -768,8 +945,8 @@ function resetLoginScreen() {
   if(sub) sub.textContent='Sign in to access your personal link cards, tasks, and credentials vault.';
 
   // Clear in-memory data
-  window._cards=[]; window._todos=[]; window._creds=[]; window._cats=[];
-  window._defaults=[]; window.isAdmin=false;
+  window._cards=[]; window._todos=[]; window._creds=[]; window._cats=[]; window._worklog=[];
+  window._defaults=[]; window.isAdmin=false; window._loadFailed=false;
 }
 
 /* ── Auth state ── */
@@ -823,14 +1000,17 @@ async function loadUserData(uid) {
       window._todos = Array.isArray(d.todos) ? d.todos : [];
       window._creds = Array.isArray(d.creds) ? d.creds : [];
       window._cats  = Array.isArray(d.cats)  ? d.cats  : [];
+      window._worklog = Array.isArray(d.worklog) ? d.worklog : [];
     } else {
-      window._cards = []; window._todos = []; window._creds = []; window._cats = [];
+      window._cards = []; window._todos = []; window._creds = []; window._cats = []; window._worklog = [];
     }
+    window._loadFailed = false;
   } catch(e) {
     console.error('Failed to load user data:', e);
-    window._cards = [];
-    window._todos = [];
-    window._creds = [];
+    // Don't let an empty screen overwrite real data in Firestore
+    window._loadFailed = true;
+    window._cards = []; window._todos = []; window._creds = []; window._cats = []; window._worklog = [];
+    alert('⚠️ Could not load your data (network issue?). Reload the page — saving is paused so nothing gets overwritten.');
   }
 }
 
@@ -858,13 +1038,14 @@ window.saveDefaults = async (links) => {
 };
 
 window.saveUserData = async () => {
-  if (!currentUser) return;
+  if (!currentUser || window._loadFailed) return;
   try {
     await setDoc(doc(db, 'users', currentUser.uid), {
       cards: window._cards || [],
       todos: window._todos || [],
       creds: window._creds || [],
-      cats:  window._cats  || []
+      cats:  window._cats  || [],
+      worklog: window._worklog || []
     });
   } catch(e) {
     console.error('Failed to save user data:', e);
@@ -892,6 +1073,7 @@ var defaultLinks = [];
 
 /* ── App state (declared first to avoid hoisting issues) ── */
 var cards=[], todos=[], creds=[], todoFilter='all', selectedIcon='link';
+var worklog=[];
 
 /* ── App logic (runs after Firebase loads data) ── */
 window.initApp = function() {
@@ -900,15 +1082,26 @@ window.initApp = function() {
   creds      = window._creds ? JSON.parse(JSON.stringify(window._creds)) : [];
   categories = window._cats  ? JSON.parse(JSON.stringify(window._cats))  : [];
   defaultLinks = window._defaults ? JSON.parse(JSON.stringify(window._defaults)) : [];
+  worklog    = window._worklog ? JSON.parse(JSON.stringify(window._worklog)) : [];
   document.querySelectorAll('.admin-only').forEach(el=>el.style.display=window.isAdmin?'flex':'none');
   renderCatChips();
   renderCatSelect();
   renderCards(); renderTodos(); renderCreds(); setFilter('all'); updateStats();
-  initTheme(); tick(); setInterval(tick, 1000);
-  if(window.innerWidth <= 768) switchTab('links');
+  initTheme(); tick(); if(!window._clockTimer) window._clockTimer=setInterval(tick, 1000);
+  initWorklog();
+  let savedView='dash'; try{savedView=localStorage.getItem('lw_view')||'dash'}catch(e){}
+  if(window.innerWidth <= 768) switchTab(savedView==='work'?'work':'links');
+  else setView(savedView);
 };
 
 function switchTab(tab) {
+  const mw=document.getElementById('mn-work');
+  if(mw) mw.classList.toggle('active', tab==='work');
+  setView(tab==='work'?'work':'dash');
+  if(tab==='work'){
+    ['mn-todo','mn-links','mn-creds'].forEach(id=>{const b=document.getElementById(id);if(b)b.classList.remove('active')});
+    return;
+  }
   const panels = {
     todo:  document.querySelector('.panel-left'),
     links: document.querySelector('.panel-center'),
@@ -925,8 +1118,258 @@ function switchTab(tab) {
   });
 }
 
+/* ══════════ WORK LOG ══════════ */
+var wlView='day', wlDate='', wlType='all', wlEditId=null;
+const WL_TYPES={
+  story:{label:'Story',icon:'book-2'},
+  defect:{label:'Defect',icon:'bug'},
+  automation:{label:'Automation',icon:'robot'},
+  task:{label:'Task',icon:'checklist'}
+};
+const WL_STATUS={
+  notstarted:{label:'Not started',cls:'s-notstarted'},
+  inprogress:{label:'In progress',cls:'s-inprogress'},
+  blocked:{label:'Blocked',cls:'s-blocked'},
+  done:{label:'Done',cls:'s-complete'}
+};
+const WL_RESULT={notrun:'Not run',pass:'Pass',fail:'Fail',partial:'Partial'};
+const WL_PLACEHOLDER={story:'STRY0012345',defect:'DEF0004567',automation:'TC / story ID',task:'optional'};
+
+function todayStr(){const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function fmtWlDate(s){
+  const d=new Date(s+'T00:00'); if(isNaN(d)) return s;
+  const t=todayStr(), y=new Date(); y.setDate(y.getDate()-1);
+  const ys=y.getFullYear()+'-'+String(y.getMonth()+1).padStart(2,'0')+'-'+String(y.getDate()).padStart(2,'0');
+  const base=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'});
+  return s===t?'Today · '+base:s===ys?'Yesterday · '+base:base;
+}
+function safeHref(u){return /^https?:\/\//i.test(u||'')?u:''}
+
+function initWorklog(){
+  wlDate=todayStr(); wlEditId=null;
+  resetWorkForm();
+  if(window.innerWidth<=768){document.getElementById('wl-body').classList.remove('open');document.getElementById('wl-toggle').classList.remove('open')}
+  setWlView(wlView); setWlType(wlType);
+}
+
+function setView(v){
+  const app=document.querySelector('.app'); if(!app) return;
+  const work=v==='work';
+  app.classList.toggle('view-worklog',work);
+  const a=document.getElementById('vt-dash'),b=document.getElementById('vt-work');
+  if(a)a.classList.toggle('active',!work); if(b)b.classList.toggle('active',work);
+  try{localStorage.setItem('lw_view',work?'work':'dash')}catch(e){}
+  if(work) renderWorklog();
+}
+
+function wlTypeChanged(){
+  const t=document.getElementById('wl-type').value;
+  document.getElementById('wl-script').style.display=t==='automation'?'block':'none';
+  document.getElementById('wl-ref').placeholder=WL_PLACEHOLDER[t]||'';
+}
+
+function resetWorkForm(){
+  wlEditId=null;
+  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.value=v};
+  set('wl-date',wlDate||todayStr()); set('wl-type','story'); set('wl-ref',''); set('wl-status','inprogress');
+  set('wl-title',''); set('wl-hours',''); set('wl-link',''); set('wl-notes','');
+  set('wl-sname',''); set('wl-stool','Playwright'); set('wl-sresult','notrun'); set('wl-scount',''); set('wl-spath','');
+  const lbl=document.getElementById('wl-save-label'); if(lbl) lbl.textContent='Add entry';
+  const ft=document.getElementById('wl-form-title'); if(ft) ft.textContent='Add work entry';
+  const c=document.getElementById('wl-cancel'); if(c) c.style.display='none';
+  if(document.getElementById('wl-type')) wlTypeChanged();
+  document.querySelectorAll('.wl-item.editing').forEach(e=>e.classList.remove('editing'));
+}
+
+function saveWorkEntry(){
+  const g=id=>document.getElementById(id).value.trim();
+  const type=g('wl-type'), ref=g('wl-ref'), title=g('wl-title');
+  if(!ref&&!title){showErr('wl-err','Add an ID or a title.');return}
+  const date=g('wl-date')||todayStr();
+  let link=g('wl-link'); if(link&&!/^https?:\/\//i.test(link)) link='https://'+link;
+  if(link&&!isUrl(link)){showErr('wl-err','Link is not a valid URL.');return}
+  const hours=g('wl-hours')===''?null:Math.max(0,parseFloat(g('wl-hours'))||0);
+  const entry={date,type,ref,title,status:g('wl-status'),hours,link,notes:document.getElementById('wl-notes').value.trim()};
+  if(type==='automation'){
+    entry.script={name:g('wl-sname'),tool:g('wl-stool'),result:g('wl-sresult'),
+      count:g('wl-scount')===''?null:Math.max(0,parseInt(g('wl-scount'),10)||0),path:g('wl-spath')};
+  }
+  if(wlEditId!=null){
+    const i=worklog.findIndex(w=>w.id===wlEditId);
+    if(i>-1) worklog[i]={...worklog[i],...entry,updated:new Date().toISOString()};
+    if(entry.type!=='automation'&&i>-1) delete worklog[i].script;
+  } else {
+    worklog.push({id:Date.now(),...entry,created:new Date().toISOString()});
+  }
+  persist();
+  if(wlView==='day') wlDate=date;
+  resetWorkForm(); renderWorklog();
+}
+
+function editWorkEntry(id){
+  const w=worklog.find(x=>x.id===id); if(!w) return;
+  const set=(k,v)=>{document.getElementById(k).value=v==null?'':v};
+  set('wl-date',w.date); set('wl-type',w.type); set('wl-ref',w.ref); set('wl-status',w.status);
+  set('wl-title',w.title); set('wl-hours',w.hours); set('wl-link',w.link); set('wl-notes',w.notes);
+  const s=w.script||{};
+  set('wl-sname',s.name); set('wl-stool',s.tool||'Playwright'); set('wl-sresult',s.result||'notrun'); set('wl-scount',s.count); set('wl-spath',s.path);
+  wlTypeChanged();
+  wlEditId=id;
+  document.getElementById('wl-save-label').textContent='Update entry';
+  document.getElementById('wl-form-title').textContent='Edit work entry';
+  document.getElementById('wl-cancel').style.display='';
+  const b=document.getElementById('wl-body'),t=document.getElementById('wl-toggle');
+  b.classList.add('open'); t.classList.add('open');
+  document.querySelectorAll('.wl-item').forEach(e=>e.classList.toggle('editing',+e.dataset.id===id));
+  document.querySelector('.wl-form').scrollIntoView({behavior:'smooth',block:'start'});
+  document.getElementById('wl-title').focus({preventScroll:true});
+}
+
+function deleteWorkEntry(id){
+  const w=worklog.find(x=>x.id===id); if(!w) return;
+  if(!confirm(`Delete "${w.ref||w.title}" from ${w.date}?`)) return;
+  worklog=worklog.filter(x=>x.id!==id);
+  if(wlEditId===id) resetWorkForm();
+  persist(); renderWorklog();
+}
+
+/* Copy an entry to today (for work that continues the next day) */
+function carryWorkEntry(id){
+  const w=worklog.find(x=>x.id===id); if(!w) return;
+  const t=todayStr();
+  const copy=JSON.parse(JSON.stringify(w));
+  copy.id=Date.now(); copy.date=t; copy.created=new Date().toISOString(); delete copy.updated;
+  copy.hours=null; if(copy.status==='done') copy.status='inprogress';
+  worklog.push(copy); persist();
+  wlView='day'; wlDate=t; setWlView('day');
+}
+
+function setWlView(v){
+  wlView=v;
+  ['day','all'].forEach(x=>{const b=document.getElementById('wlv-'+x);if(b)b.classList.toggle('active',x===v)});
+  const n=document.getElementById('wl-datenav'); if(n) n.style.display=v==='day'?'flex':'none';
+  renderWorklog();
+}
+function setWlType(t){
+  wlType=t;
+  ['all','story','defect','automation','task'].forEach(x=>{const b=document.getElementById('wlt-'+x);if(b)b.classList.toggle('active',x===t)});
+  renderWorklog();
+}
+function shiftWlDate(n){
+  const d=new Date((wlDate||todayStr())+'T00:00'); d.setDate(d.getDate()+n);
+  wlDate=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  renderWorklog();
+}
+
+function filteredWorklog(){
+  const q=(document.getElementById('wl-search')?.value||'').trim().toLowerCase();
+  return worklog.filter(w=>{
+    if(wlView==='day'&&w.date!==wlDate) return false;
+    if(wlType!=='all'&&w.type!==wlType) return false;
+    if(q){
+      const s=w.script||{};
+      const hay=[w.ref,w.title,w.notes,s.name,s.path,s.tool].join(' ').toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    return true;
+  }).sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:b.id-a.id);
+}
+
+function workEntryHtml(w){
+  const T=WL_TYPES[w.type]||WL_TYPES.task, S=WL_STATUS[w.status]||WL_STATUS.inprogress;
+  const href=safeHref(w.link);
+  const ref=w.ref?(href?`<a class="wl-ref" href="${esc(href)}" target="_blank" rel="noopener">${esc(w.ref)} <i class="ti ti-external-link" style="font-size:11px" aria-hidden="true"></i></a>`:`<span class="wl-ref">${esc(w.ref)}</span>`)
+                 :(href?`<a class="wl-ref" href="${esc(href)}" target="_blank" rel="noopener"><i class="ti ti-external-link" aria-hidden="true"></i></a>`:'');
+  let scr='';
+  if(w.type==='automation'&&w.script){
+    const s=w.script, r=s.result||'notrun';
+    scr=`<div class="wl-scr">
+      <span><i class="ti ti-file-code" aria-hidden="true"></i> <b>${esc(s.name||'—')}</b></span>
+      <span>Tool: <b>${esc(s.tool||'—')}</b></span>
+      <span>Result: <span class="r-${esc(r)}">${esc(WL_RESULT[r]||r)}</span></span>
+      ${s.count!=null?`<span>Tests: <b>${esc(s.count)}</b></span>`:''}
+      ${s.path?`<span style="flex-basis:100%"><i class="ti ti-folder" aria-hidden="true"></i> <b>${esc(s.path)}</b></span>`:''}
+    </div>`;
+  }
+  const isToday=w.date===todayStr();
+  return `<div class="wl-item t-${esc(w.type)}${wlEditId===w.id?' editing':''}" data-id="${w.id}">
+    <div class="wl-head">
+      <span class="wl-type wt-${esc(w.type)}"><i class="ti ti-${T.icon}" aria-hidden="true"></i>${T.label}</span>
+      ${ref}
+      <span class="status-badge ${S.cls}">${S.label}</span>
+      ${w.hours!=null?`<span class="wl-hours"><i class="ti ti-clock" aria-hidden="true"></i>${esc(w.hours)}h</span>`:''}
+      <div class="wl-actions">
+        ${isToday?'':`<button class="btn btn-icon btn-sm" title="Continue today (copy to today)" onclick="carryWorkEntry(${w.id})"><i class="ti ti-arrow-forward-up" aria-hidden="true"></i></button>`}
+        <button class="btn btn-icon btn-sm" title="Edit" onclick="editWorkEntry(${w.id})"><i class="ti ti-pencil" aria-hidden="true"></i></button>
+        <button class="btn btn-icon btn-sm btn-danger" title="Delete" onclick="deleteWorkEntry(${w.id})"><i class="ti ti-trash" aria-hidden="true"></i></button>
+      </div>
+    </div>
+    ${w.title?`<div class="wl-title">${esc(w.title)}</div>`:''}
+    ${w.notes?`<div class="wl-notes">${esc(w.notes)}</div>`:''}
+    ${scr}
+  </div>`;
+}
+
+function renderWorklog(){
+  const list=document.getElementById('wl-list'); if(!list) return;
+  const vd=document.getElementById('wl-viewdate'); if(vd) vd.value=wlDate;
+  const items=filteredWorklog();
+  // summary
+  const cnt=t=>items.filter(w=>w.type===t).length;
+  const hrs=items.reduce((a,w)=>a+(+w.hours||0),0);
+  const done=items.filter(w=>w.status==='done').length, blocked=items.filter(w=>w.status==='blocked').length;
+  const sum=document.getElementById('wl-summary');
+  sum.innerHTML=items.length?`<span><b>${items.length}</b> entr${items.length===1?'y':'ies'}</span>
+    ${cnt('story')?`<span><b>${cnt('story')}</b> stor${cnt('story')===1?'y':'ies'}</span>`:''}
+    ${cnt('defect')?`<span><b>${cnt('defect')}</b> defect${cnt('defect')===1?'':'s'}</span>`:''}
+    ${cnt('automation')?`<span><b>${cnt('automation')}</b> script${cnt('automation')===1?'':'s'}</span>`:''}
+    ${cnt('task')?`<span><b>${cnt('task')}</b> task${cnt('task')===1?'':'s'}</span>`:''}
+    ${done?`<span style="color:var(--tx-success)"><b style="color:inherit">${done}</b> done</span>`:''}
+    ${blocked?`<span style="color:var(--tx-danger)"><b style="color:inherit">${blocked}</b> blocked</span>`:''}
+    ${hrs?`<span><b>${Math.round(hrs*100)/100}</b> h</span>`:''}
+    <button class="btn btn-sm" id="wl-copy" onclick="copyStandup()" title="Copy these entries as text for stand-up / status mail"><i class="ti ti-copy" aria-hidden="true"></i> Copy summary</button>`:'';
+  // grouped by date
+  let html='', cur=null;
+  items.forEach(w=>{
+    if(w.date!==cur){cur=w.date;html+=`<div class="section-divider"><i class="ti ti-calendar" aria-hidden="true"></i> ${esc(fmtWlDate(w.date))}</div>`}
+    html+=workEntryHtml(w);
+  });
+  list.innerHTML=html;
+  const empty=document.getElementById('wl-empty'), msg=document.getElementById('wl-empty-msg');
+  empty.style.display=items.length?'none':'flex';
+  const filtered=(document.getElementById('wl-search')?.value||'').trim()||wlType!=='all';
+  msg.textContent=filtered?'No entries match these filters.':wlView==='day'?(wlDate===todayStr()?'Nothing logged today yet.':'Nothing logged on this day.'):'No work entries yet.';
+}
+
+function standupText(items){
+  const byDate={};
+  items.forEach(w=>(byDate[w.date]=byDate[w.date]||[]).push(w));
+  const out=[];
+  Object.keys(byDate).sort().reverse().forEach(d=>{
+    out.push(`Work log — ${fmtWlDate(d).replace(/^(Today|Yesterday) · /,'')}`);
+    byDate[d].forEach(w=>{
+      const T=(WL_TYPES[w.type]||WL_TYPES.task).label, S=(WL_STATUS[w.status]||WL_STATUS.inprogress).label;
+      let line=`• [${T}] ${[w.ref,w.title].filter(Boolean).join(' — ')} (${S}${w.hours!=null?', '+w.hours+'h':''})`;
+      out.push(line);
+      if(w.type==='automation'&&w.script){
+        const s=w.script;
+        out.push(`    Script: ${[s.name,s.tool,WL_RESULT[s.result]||'',s.count!=null?s.count+' tests':'',s.path].filter(Boolean).join(' | ')}`);
+      }
+      if(w.notes) out.push('    '+w.notes.replace(/\n/g,'\n    '));
+    });
+    out.push('');
+  });
+  return out.join('\n').trim();
+}
+function copyStandup(){
+  const txt=standupText(filteredWorklog());
+  const done=()=>{const b=document.getElementById('wl-copy');if(b){const o=b.innerHTML;b.innerHTML='<i class="ti ti-check" aria-hidden="true"></i> Copied';setTimeout(()=>b.innerHTML=o,1600)}};
+  if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(done,()=>prompt('Copy this summary:',txt));
+  else prompt('Copy this summary:',txt);
+}
+
 function persist() {
-  window._cards = cards; window._todos = todos; window._creds = creds; window._cats = categories;
+  window._cards = cards; window._todos = todos; window._creds = creds; window._cats = categories; window._worklog = worklog;
   if (window.saveUserData) window.saveUserData();
 }
 
